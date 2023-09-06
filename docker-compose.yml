@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  api:
+    image: blog
+    build:
+      context: .
+      dockerfile: ./src/webapi/Dockerfile
+    container_name: blogwebapi
+    restart: always
+    ports:
+    - 8080:80
+    environment:
+      - ASPNETCORE_Environment=Development
+      - ASPNETCORE_URLS=http://+:80
+      - JWTTokenPwd=${TOKEN_PASSWORD}

@@ -1,0 +1,13 @@
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using System.Net;
+global using System.Text;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.IdentityModel.Tokens;
+global using WebApi.Extensions;
+global using WebApi.Endpoints;
+global using Domain.Static;
+global using Domain.Models;
+global using Application.Services;
+global using System.Security.Claims;
+global using Microsoft.OpenApi.Models;
+global using Swashbuckle.AspNetCore.SwaggerGen;
