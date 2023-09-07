@@ -1,6 +1,10 @@
 namespace Domain.Interfaces;
-public interface IUnitOfWork : IDisposable
+
+public interface IUnitOfWork
 {
-    IPostRepository Posts { get; }
-    int Complete();
+    IPostRepository Posts { get; init; }
+    ICommentRepository Comments {get; init; }
+    IUserRepository Users { get; init; }
+    Task<int> CompleteAsync();
+    void Dispose();
 }

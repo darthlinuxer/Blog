@@ -7,7 +7,7 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <PublishSingleFile>false</PublishSingleFile>
     <PublishAot>false</PublishAot>
-    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

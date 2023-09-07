@@ -6,6 +6,7 @@ public class Post
     public string Title { get; set; }
     public string Content { get; set; }
     public DateTime DatePublished { get; set; }
+    public int AuthorId {get; set;}
     public User Author { get; set; }
     public ICollection<Comment> Comments { get; set; }
 }

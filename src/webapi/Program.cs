@@ -1,15 +1,22 @@
+using Domain.Interfaces;
+using Infra;
+
 var builder = WebApplication.CreateBuilder(args);
 var _configuration = builder.Configuration;
-var _key = Environment.GetEnvironmentVariable(DefaultProperties.JWTTokenPwd);
+var _key = Environment.GetEnvironmentVariable(DefaultProperties.JWTTokenPwd) ?? "";
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(ConfigureSwaggerGen);
 builder.Services.AddHealthChecks();
 
 builder.Services.ConfigureJwtAndPolicies();
+builder.Services.ConfigCustomDbContext(_configuration);
 
 builder.Services.AddSingleton(new JwtTokenService(_key));
-
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
 var app = builder.Build();
 
@@ -24,7 +31,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapHealthChecks("/health");
 app.MapCredentialsEndpoints();
-app.MapBlogEndpoints();
+app.MapPostEndpoints();
 
 
 app.Run();

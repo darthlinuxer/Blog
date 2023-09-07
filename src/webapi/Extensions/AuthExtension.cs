@@ -22,7 +22,7 @@ public static class AuthExtension
                         ValidAudience = "BlogUsers",
                         ValidateAudience = false,
                         IssuerSigningKey =
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable(DefaultProperties.JWTTokenPwd))),
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable(DefaultProperties.JWTTokenPwd) ?? "")),
                         ValidateIssuerSigningKey = true,
                         RequireExpirationTime = true,
                         ValidateLifetime = true,
@@ -43,7 +43,7 @@ public static class AuthExtension
                         },
                         OnTokenValidated = context =>
                         {
-                            context.HttpContext.User = context.Principal;
+                            context.HttpContext.User = context.Principal!;
                             return Task.CompletedTask;
                         },
                         OnMessageReceived = context =>

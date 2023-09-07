@@ -1,3 +1,7 @@
+using System.Runtime.CompilerServices;
+using Domain.Enums;
+using Domain.Interfaces;
+
 namespace WebApi.Endpoints;
 
 public static partial class EndpointExtensions
@@ -5,6 +9,7 @@ public static partial class EndpointExtensions
     public static void MapCredentialsEndpoints(this WebApplication app)
     {
         var credentials = app.MapGroup("/api/credentials/");
+
         credentials.MapGet("", [Authorize] (ClaimsPrincipal user) =>
         {
             var username = user.FindFirst(ClaimTypes.Name)?.Value;
@@ -15,11 +20,19 @@ public static partial class EndpointExtensions
                 Role = role
             };
         });
-        credentials.MapPost("", (JwtTokenService service, LoginRecord blog) =>
+
+        credentials.MapPost("", async (JwtTokenService service,
+                                       LoginRecord blog,
+                                       IUserService userService,
+                                       [EnumeratorCancellation] CancellationToken ct) =>
         {
             var (username, password) = blog;
-            if (username != "camilo" || password != "123") return Results.BadRequest("Username or password is invalid");
-            var token = service.GenerateToken(username, "editor");
+            var user = await userService.GetAsync(u => u.Username == username,
+                                                  ct,
+                                                  asNoTracking: true,
+                                                  includeNavigationNames: null);
+            if (user is null || user?.Password != password) return Results.BadRequest("Username or password is invalid");
+            var token = service.GenerateToken(username, Enum.GetName<UserRole>(user.Role));
             return Results.Ok(token);
         });
 
