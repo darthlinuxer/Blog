@@ -10,25 +10,26 @@ public partial class BlogTest
         var UserService = _serviceProvider.GetService<IUserService>();
 
         //Act
-        var addedUser = await UserService!.AddAsync(new User {Username="Camilo",Password="123",Role=UserRole.Writer });
+        var addedUser = await UserService!.AddAsync(new User { UserName = "Camilo", PasswordHash = "123", Role = UserRole.Writer });
         await UserService.CompleteAsync();
-        var userInDb = await UserService.GetAsync(p=>p.UserId == addedUser!.UserId, CancellationToken.None, true, null);
+        var userInDb = await UserService.GetAsync(p => p.Id == addedUser!.Id, CancellationToken.None, true, null);
 
         //Assert
         Assert.IsNotNull(addedUser);
-        Assert.AreEqual(addedUser.UserId, userInDb!.UserId);
-        Assert.AreEqual(addedUser.Username, userInDb.Username);
+        Assert.AreEqual(addedUser.Id, userInDb!.Id);
+        Assert.AreEqual(addedUser.UserName, userInDb.UserName);
     }
 
-     public async Task GetAllUsersByRole_ShouldReturnAllUsers()
+    [TestMethod]
+    public async Task GetAllUsersByRole_ShouldReturnAllUsers()
     {
         //Arrange
         var UserService = _serviceProvider.GetService<IUserService>();
 
         //Act
-        var camilo = await UserService!.AddAsync(new User {Username="Camilo",Password="123",Role=UserRole.Writer });
-        var anakin = await UserService!.AddAsync(new User {Username="Anakin",Password="123",Role=UserRole.Public });
-        var leia = await UserService!.AddAsync(new User {Username="Leia",Password="123",Role=UserRole.Public });
+        var camilo = await UserService!.AddAsync(new User { UserName = "Camilo", PasswordHash = "123", Role = UserRole.Writer });
+        var anakin = await UserService!.AddAsync(new User { UserName = "Anakin", PasswordHash = "123", Role = UserRole.Public });
+        var leia = await UserService!.AddAsync(new User { UserName = "Leia", PasswordHash = "123", Role = UserRole.Public });
         await UserService.CompleteAsync();
         var allPublicUsers = UserService.GetAllUsersByRole(role: UserRole.Public,
                                                      page: 1,
@@ -37,11 +38,14 @@ public partial class BlogTest
                                                      asNoTracking: true,
                                                      navigation: null,
                                                      CancellationToken.None);
-        
+        int publicCount = 0;
+        await foreach (var publicUser in allPublicUsers)
+        {
+            if (publicUser.Role == UserRole.Public) publicCount++;
+        }
+
         //Assert
-        Assert.IsNotNull(addedUser);
-        Assert.AreEqual(addedUser.UserId, userInDb!.UserId);
-        Assert.AreEqual(addedUser.Username, userInDb.Username);
+        Assert.IsTrue(publicCount == 2);
     }
 
     [TestMethod]
@@ -51,10 +55,10 @@ public partial class BlogTest
         var UserService = _serviceProvider.GetService<IUserService>();
 
         //Act
-        var userInDb = await UserService!.GetAsync(p=>p.UserId==10, CancellationToken.None, true, null);
+        var userInDb = await UserService!.GetAsync(p => p.Id == "10", CancellationToken.None, true, null);
 
         //Assert
         Assert.IsNull(userInDb);
     }
-    
+
 }

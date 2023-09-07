@@ -14,7 +14,7 @@ public class PostRepository : GenericRepository<Post>, IPostRepository
         string[]? navigation,
         CancellationToken ct)
     {
-        return GetAllAsync(where: $"Author.Username={username}",
+        return GetAllAsync(where: $"@Author.Username=\"{username}\"",
                            orderby: "Username",
                            page: page,
                            count: count,

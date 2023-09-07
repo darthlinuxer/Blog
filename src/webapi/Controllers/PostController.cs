@@ -15,10 +15,11 @@ public class PostController : ControllerBase
     }
 
     [HttpGet]
-    [Route("(action)")]
-    public async IAsyncEnumerable<IActionResult> GetAllPostsByAuthorAsync([AsParameters] PaginationRecord pagination,
-                                                                          string author,
-                                                                          [EnumeratorCancellation] CancellationToken ct)
+    [Route("GetAllPostsByAuthor")]
+    public async IAsyncEnumerable<IActionResult> GetAllPostsByAuthorAsync(
+        [AsParameters] PaginationRecord pagination,
+        [FromQuery] string author,
+        [EnumeratorCancellation] CancellationToken ct)
     {
         var posts = _service.GetAllByAuthorAsync(author,
                                                  pagination.page,
@@ -34,11 +35,12 @@ public class PostController : ControllerBase
     }
 
     [HttpGet]
-    [Route("(action)")]
-    public async IAsyncEnumerable<IActionResult> GetAllPostsFilteredAsync([AsParameters] PaginationRecord pagination,
-                                                                          string where,
-                                                                          string orderby,
-                                                                          [EnumeratorCancellation] CancellationToken ct)
+    [Route("GetAllPostsFiltered)")]
+    public async IAsyncEnumerable<IActionResult> GetAllPostsFilteredAsync(
+        [AsParameters] PaginationRecord pagination,
+        [FromQuery] string where,
+        [FromQuery] string orderby,
+        [EnumeratorCancellation] CancellationToken ct)
     {
         var posts = _service.GetAllAsync(where: where,
                                          orderby: orderby,

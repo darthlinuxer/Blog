@@ -1,9 +1,10 @@
 namespace Infra;
+
 public class UserRepository : GenericRepository<User>, IUserRepository
 {
-  public UserRepository(BlogContext context) : base(context)
-  {
-  }
+    public UserRepository(BlogContext context) : base(context)
+    {
+    }
 
     public ConfiguredCancelableAsyncEnumerable<User>? GetAllUsersByRole(UserRole role,
                                                                        int page,
@@ -13,7 +14,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
                                                                        string[]? navigation,
                                                                        CancellationToken ct)
     {
-        return GetAllAsync(where: $"Role={role}",
+        return GetAllAsync(where: $"Role=\"{role}\"",
                            orderby: "Username",
                            page: page,
                            count: count,

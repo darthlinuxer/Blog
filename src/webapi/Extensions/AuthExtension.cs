@@ -1,5 +1,7 @@
 
 
+using Microsoft.AspNetCore.Identity;
+
 namespace WebApi.Extensions;
 public static class AuthExtension
 {
@@ -7,58 +9,12 @@ public static class AuthExtension
     {
         serviceColletion.AddAuthentication(options =>
                 {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = IdentityConstants.BearerScheme;
+                    options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
                 })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+                .AddBearerToken(IdentityConstants.BearerScheme, options =>
                 {
-                    options.RequireHttpsMetadata = false;
-                    options.SaveToken = true;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidIssuer = "BlogAPI",
-                        ValidateIssuer = true,
-                        RequireSignedTokens = true,
-                        ValidAudience = "BlogUsers",
-                        ValidateAudience = false,
-                        IssuerSigningKey =
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable(DefaultProperties.JWTTokenPwd) ?? "")),
-                        ValidateIssuerSigningKey = true,
-                        RequireExpirationTime = true,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
-                    };
-                    options.Events = new JwtBearerEvents()
-                    {
-                        OnChallenge = context =>
-                        {
-                            context.HandleResponse();
-                            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                            context.Response.WriteAsJsonAsync(new
-                            {
-                                error = context.Error,
-                                description = context.ErrorDescription
-                            });
-                            return Task.CompletedTask;
-                        },
-                        OnTokenValidated = context =>
-                        {
-                            context.HttpContext.User = context.Principal!;
-                            return Task.CompletedTask;
-                        },
-                        OnMessageReceived = context =>
-                        {
-                            return Task.CompletedTask;
-                        },
-                        OnAuthenticationFailed = context =>
-                        {
-                            return Task.CompletedTask;
-                        },
-                        OnForbidden = context =>
-                        {
-                            return Task.CompletedTask;
-                        }
-                    };
+                    options.BearerTokenExpiration = TimeSpan.FromHours(1);
                 });
 
         serviceColletion.AddAuthorization(config =>
