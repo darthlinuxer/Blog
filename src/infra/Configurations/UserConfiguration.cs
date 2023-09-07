@@ -1,8 +1,8 @@
 namespace Infra.Configurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public class UserConfiguration : IEntityTypeConfiguration<BlogUser>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<BlogUser> builder)
     {
         // // Define the primary key
         // builder.HasKey(u => u.Id);
@@ -15,6 +15,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                .WithOne(p => p.Author)
                .HasForeignKey(p => p.AuthorId)
                .OnDelete(DeleteBehavior.Cascade);
-        
+
     }
 }

@@ -8,12 +8,12 @@ public class UserService : IUserService
         _unitOfWork = unitOfWork;
     }
 
-    Task<User?> IGenericRepository<User>.AddAsync(User entity)
+    Task<BlogUser?> IGenericRepository<BlogUser>.AddAsync(BlogUser entity)
     {
         return _unitOfWork.Users.AddAsync(entity);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<User>? GetAllAsync(string where,
+    public ConfiguredCancelableAsyncEnumerable<BlogUser>? GetAllAsync(string where,
                                                                   string orderby,
                                                                   int page,
                                                                   int count,
@@ -32,7 +32,7 @@ public class UserService : IUserService
                                              ct);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<User>? GetAllUsersByRole(UserRole role,
+    public ConfiguredCancelableAsyncEnumerable<BlogUser>? GetAllUsersByRole(UserRole role,
                                                                         int page,
                                                                         int count,
                                                                         bool descending,
@@ -49,7 +49,7 @@ public class UserService : IUserService
                                                    ct);
     }
 
-    public Task<User?> GetAsync(Expression<Func<User, bool>> p,
+    public Task<BlogUser?> GetAsync(Expression<Func<BlogUser, bool>> p,
                                 CancellationToken ct,
                                 bool asNoTracking,
                                 string[]? includeNavigationNames)
@@ -57,12 +57,12 @@ public class UserService : IUserService
         return _unitOfWork.Users.GetAsync(p, ct, asNoTracking, includeNavigationNames);
     }
 
-    public User? Remove(User entity)
+    public BlogUser? Remove(BlogUser entity)
     {
         return _unitOfWork.Users.Remove(entity);
     }
 
-    public User? Update(User entity)
+    public BlogUser? Update(BlogUser entity)
     {
         return _unitOfWork.Users.Update(entity);
     }

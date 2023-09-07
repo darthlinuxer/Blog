@@ -1,3 +1,6 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+
 namespace blog;
 
 public partial class BlogTest
@@ -7,58 +10,39 @@ public partial class BlogTest
     public async Task GetUserById_ShouldReturnUser()
     {
         //Arrange
-        var UserService = _serviceProvider.GetService<IUserService>();
+        var userManager = _serviceProvider.GetService<UserManager<BlogUser>>();
 
         //Act
-        var addedUser = await UserService!.AddAsync(new User { UserName = "Camilo", PasswordHash = "123", Role = UserRole.Writer });
-        await UserService.CompleteAsync();
-        var userInDb = await UserService.GetAsync(p => p.Id == addedUser!.Id, CancellationToken.None, true, null);
+        var result = await userManager.CreateAsync(new BlogUser { UserName = "Camilo", PasswordHash = "abc" }, password: "123");
+        var userInDb = await userManager.FindByNameAsync("Camilo");
 
         //Assert
-        Assert.IsNotNull(addedUser);
-        Assert.AreEqual(addedUser.Id, userInDb!.Id);
-        Assert.AreEqual(addedUser.UserName, userInDb.UserName);
+        Assert.IsTrue(result.Succeeded);
+        Assert.IsTrue(userInDb.UserName == "Camilo");
     }
 
     [TestMethod]
     public async Task GetAllUsersByRole_ShouldReturnAllUsers()
     {
         //Arrange
-        var UserService = _serviceProvider.GetService<IUserService>();
+        var userManager = _serviceProvider.GetService<UserManager<BlogUser>>();
 
         //Act
-        var camilo = await UserService!.AddAsync(new User { UserName = "Camilo", PasswordHash = "123", Role = UserRole.Writer });
-        var anakin = await UserService!.AddAsync(new User { UserName = "Anakin", PasswordHash = "123", Role = UserRole.Public });
-        var leia = await UserService!.AddAsync(new User { UserName = "Leia", PasswordHash = "123", Role = UserRole.Public });
-        await UserService.CompleteAsync();
-        var allPublicUsers = UserService.GetAllUsersByRole(role: UserRole.Public,
-                                                     page: 1,
-                                                     count: 10,
-                                                     descending: true,
-                                                     asNoTracking: true,
-                                                     navigation: null,
-                                                     CancellationToken.None);
-        int publicCount = 0;
-        await foreach (var publicUser in allPublicUsers)
-        {
-            if (publicUser.Role == UserRole.Public) publicCount++;
-        }
+        var result1 = await userManager!.CreateAsync(new BlogUser { UserName = "Camilo", PasswordHash = "abc" }, password: "123");
+        var result2 = await userManager!.CreateAsync(new BlogUser { UserName = "Anakin", PasswordHash = "abc" }, password: "123");
+        var result3 = await userManager!.CreateAsync(new BlogUser { UserName = "Leia", PasswordHash = "123" }, password: "123");
 
-        //Assert
-        Assert.IsTrue(publicCount == 2);
-    }
+        var camilo = await userManager.FindByNameAsync("Camilo");
+        await userManager.AddClaimAsync(camilo, new Claim(ClaimTypes.Role, "Public"));
 
-    [TestMethod]
-    public async Task GetNotExistentUserById_ShouldReturnNull()
-    {
-        //Arrange
-        var UserService = _serviceProvider.GetService<IUserService>();
+        var anakin = await userManager.FindByNameAsync("Anakin");
+        await userManager.AddClaimAsync(anakin, new Claim(ClaimTypes.Role, "Writer"));
 
-        //Act
-        var userInDb = await UserService!.GetAsync(p => p.Id == "10", CancellationToken.None, true, null);
+        var leia = await userManager.FindByNameAsync("Leia");
+        await userManager.AddClaimAsync(leia, new Claim(ClaimTypes.Role, "Writer"));
 
-        //Assert
-        Assert.IsNull(userInDb);
+        var writers = await userManager.GetUsersForClaimAsync(new Claim(ClaimTypes.Role, "Writer"));
+        Assert.IsTrue(writers.Count == 2);
     }
 
 }

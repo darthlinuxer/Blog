@@ -1,13 +1,13 @@
 namespace Domain.Interfaces;
 
-public interface IUserRepository: IGenericRepository<User>
+public interface IUserRepository : IGenericRepository<BlogUser>
 {
-    public ConfiguredCancelableAsyncEnumerable<User>? GetAllUsersByRole(UserRole role,
+    public ConfiguredCancelableAsyncEnumerable<BlogUser>? GetAllUsersByRole(UserRole role,
                                                                        int page,
                                                                        int count,
                                                                        bool descending,
                                                                        bool asNoTracking,
                                                                        string[]? navigation,
                                                                        CancellationToken ct);
-    
+
 }

@@ -1,12 +1,12 @@
 namespace Infra;
 
-public class UserRepository : GenericRepository<User>, IUserRepository
+public class UserRepository : GenericRepository<BlogUser>, IUserRepository
 {
     public UserRepository(BlogContext context) : base(context)
     {
     }
 
-    public ConfiguredCancelableAsyncEnumerable<User>? GetAllUsersByRole(UserRole role,
+    public ConfiguredCancelableAsyncEnumerable<BlogUser>? GetAllUsersByRole(UserRole role,
                                                                        int page,
                                                                        int count,
                                                                        bool descending,

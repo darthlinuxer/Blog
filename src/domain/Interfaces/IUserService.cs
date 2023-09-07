@@ -1,6 +1,6 @@
 namespace Domain.Interfaces;
 
-public interface IUserService : IGenericRepository<User>, IUserRepository
+public interface IUserService : IGenericRepository<BlogUser>, IUserRepository
 {
     public Task<int> CompleteAsync();
 }

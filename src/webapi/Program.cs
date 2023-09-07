@@ -32,8 +32,6 @@ if (app.Environment.IsDevelopment())
 app.MapHealthChecks("/health");
 app.MapCredentialsEndpoints();
 app.MapPostEndpoints();
-app.MapIdentityApi<User>();
-
 
 app.Run();
 
