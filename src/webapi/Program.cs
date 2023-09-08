@@ -14,7 +14,6 @@ builder.Services.ConfigCustomDbContext(_configuration);
 
 builder.Services.AddSingleton(new JwtTokenService(_key));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 

@@ -60,7 +60,7 @@ public static partial class EndpointExtensions
 
             await userManager.AddClaimsAsync(blogUser, new List<Claim>
             {
-                new Claim(ClaimTypes.Role, Enum.GetName(input.role))
+                new Claim(ClaimTypes.Role, "Writer")
             });
 
             return Results.Ok(new { msg = "User Created!", user = blogUser });
