@@ -5,7 +5,7 @@ public static class DbContextExtensions
     {
         services.AddPooledDbContextFactory<BlogContext>(options =>
         {
-            options.UseInMemoryDatabase("Blog.db");
+            options.UseSqlite("app.db", c=>c.MigrationsAssembly("webapi"));
         });
 
         services.AddScoped(implementationFactory: sp => sp
