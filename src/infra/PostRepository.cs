@@ -1,11 +1,11 @@
 namespace Infra;
-public class PostRepository : GenericRepository<Post>, IPostRepository
+public class PostRepository : GenericRepository<PostModel>, IPostRepository
 {
     public PostRepository(BlogContext context) : base(context)
     {
     }
 
-    public ConfiguredCancelableAsyncEnumerable<Post>? GetAllByAuthorAsync(
+    public ConfiguredCancelableAsyncEnumerable<PostModel>? GetAllByAuthorAsync(
         string username,
         int page,
         int count,

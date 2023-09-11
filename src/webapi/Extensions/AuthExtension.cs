@@ -1,23 +1,31 @@
-
-
-using Microsoft.AspNetCore.Identity;
+using webapi.Extensions;
 
 namespace WebApi.Extensions;
 public static class AuthExtension
 {
-    public static IServiceCollection ConfigureJwtAndPolicies(this IServiceCollection serviceColletion)
+    public static IServiceCollection ConfigureJwtAndPolicies(this IServiceCollection services)
     {
-        serviceColletion.AddAuthentication(options =>
+        services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = IdentityConstants.BearerScheme;
                     options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
                 })
-                .AddBearerToken(IdentityConstants.BearerScheme, options =>
+                .AddJwtBearer(IdentityConstants.BearerScheme, options =>
                 {
-                    options.BearerTokenExpiration = TimeSpan.FromHours(1);
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = TokenExtensions.Issuer,
+                        ValidAudience = TokenExtensions.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TokenExtensions.SecretKey)),
+                        ClockSkew = TimeSpan.FromSeconds(0)
+                    };
                 });
 
-        serviceColletion.AddAuthorization(config =>
+        services.AddAuthorization(config =>
         {
             config.AddPolicy("PublicPolicy", policyBuilder =>
             {
@@ -39,6 +47,6 @@ public static class AuthExtension
             .Build();
         });
 
-        return serviceColletion;
+        return services;
     }
 }

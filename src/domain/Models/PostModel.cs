@@ -1,6 +1,6 @@
 namespace Domain.Models;
 
-public class Post
+public class PostModel
 {
     public int PostId { get; set; }
     public string Title { get; set; }
@@ -8,5 +8,5 @@ public class Post
     public DateTime DatePublished { get; set; }
     public string AuthorId { get; set; }
     public BlogUser Author { get; set; }
-    public ICollection<Comment> Comments { get; set; }
+    public ICollection<Comment>? Comments { get; set; }
 }

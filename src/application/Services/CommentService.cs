@@ -1,5 +1,6 @@
 
-using System.Runtime.CompilerServices;
+using System.Drawing;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace Application.Services;
 
@@ -12,9 +13,11 @@ public class CommentService: ICommentService
         this._unitOfWork = unitOfWork;
     }
 
-    async Task<Comment?> IGenericRepository<Comment>.AddAsync(Comment entity)
+     public async Task<Result<Comment>> AddAsync(Comment entity)
     {
-        return await _unitOfWork.Comments.AddAsync(entity);
+        var addedComment = await _unitOfWork.Comments.AddAsync(entity);
+        if(addedComment is null) return Result<Comment>.Failure(["Comment not added"]);
+        return Result<Comment>.Success(addedComment);
     }
 
     public ConfiguredCancelableAsyncEnumerable<Comment>? GetAllAsync(string where,
@@ -70,22 +73,28 @@ public class CommentService: ICommentService
                                                               ct);
     }
 
-    public Task<Comment?> GetAsync(Expression<Func<Comment, bool>> p,
+    public async Task<Result<Comment>> GetAsync(Expression<Func<Comment, bool>> p,
                                    CancellationToken ct,
                                    bool asNoTracking,
                                    string[]? includeNavigationNames)
     {
-        return _unitOfWork.Comments.GetAsync(p, ct, asNoTracking, includeNavigationNames);
+        var comment = await _unitOfWork.Comments.GetAsync(p, ct, asNoTracking, includeNavigationNames);
+        if(comment is null) return Result<Comment>.Failure([""]);
+        return Result<Comment>.Success(comment);
     }
 
-    public Comment? Remove(Comment entity)
+    public Result<Comment> Remove(Comment entity)
     {
-        return _unitOfWork.Comments.Remove(entity);
+        var comment = _unitOfWork.Comments.Remove(entity);
+        if(comment is null) return Result<Comment>.Failure(["Comment not found!"]);
+        return Result<Comment>.Success(comment);
     }
 
-    public Comment? Update(Comment entity)
+    public Result<Comment> Update(Comment entity)
     {
-        return _unitOfWork.Comments.Update(entity);
+        var comment = _unitOfWork.Comments.Update(entity);
+         if(comment is null) return Result<Comment>.Failure(["Comment not found!"]);
+        return Result<Comment>.Success(comment);
     }
 
     public async Task<int> CompleteAsync() => await _unitOfWork.CompleteAsync();

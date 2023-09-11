@@ -1,8 +1,6 @@
-using System.Runtime.CompilerServices;
-
 namespace Application.Services;
 
-public class PostService: IPostService
+public class PostService : IPostService
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -11,12 +9,14 @@ public class PostService: IPostService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Post?> AddAsync(Post entity)
+    public async Task<Result<PostModel>> AddAsync(PostModel entity)
     {
-        return await _unitOfWork.Posts.AddAsync(entity);
+        var addedPost = await _unitOfWork.Posts.AddAsync(entity);
+        if (addedPost is null) return Result<PostModel>.Failure(["Post not added"]);
+        return Result<PostModel>.Success(addedPost);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<Post>? GetAllAsync(string where,
+    public ConfiguredCancelableAsyncEnumerable<PostModel>? GetAllAsync(string where,
                                                                   string orderby,
                                                                   int page,
                                                                   int count,
@@ -35,7 +35,7 @@ public class PostService: IPostService
                                              ct);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<Post>? GetAllByAuthorAsync(string username,
+    public ConfiguredCancelableAsyncEnumerable<PostModel>? GetAllByAuthorAsync(string username,
                                                                           int page,
                                                                           int count,
                                                                           bool descending,
@@ -52,22 +52,28 @@ public class PostService: IPostService
                                                      ct);
     }
 
-    public async Task<Post?> GetAsync(Expression<Func<Post, bool>> p,
+    public async Task<Result<PostModel>> GetAsync(Expression<Func<PostModel, bool>> p,
                                       CancellationToken ct,
                                       bool asNoTracking,
                                       string[]? includeNavigationNames)
     {
-        return await _unitOfWork.Posts.GetAsync(p, ct, asNoTracking, includeNavigationNames);
+        var post = await _unitOfWork.Posts.GetAsync(p, ct, asNoTracking, includeNavigationNames);
+        if (post is null) return Result<PostModel>.Failure(["Post does not exist"]);
+        return Result<PostModel>.Success(post);
     }
 
-    public Post? Remove(Post entity)
+    public Result<PostModel> Remove(PostModel entity)
     {
-        return _unitOfWork.Posts.Remove(entity);
+        var removedPost = _unitOfWork.Posts.Remove(entity);
+        if (removedPost is null) return Result<PostModel>.Failure(["Post does not exist"]);
+        return Result<PostModel>.Success(removedPost);
     }
 
-    public Post? Update(Post entity)
+    public Result<PostModel> Update(PostModel entity)
     {
-        return _unitOfWork.Posts.Update(entity);
+        var updatedPost = _unitOfWork.Posts.Update(entity);
+        if (updatedPost is null) return Result<PostModel>.Failure(["Post does not exist"]);
+        return Result<PostModel>.Success(updatedPost);
     }
 
     public async Task<int> CompleteAsync() => await _unitOfWork.CompleteAsync();

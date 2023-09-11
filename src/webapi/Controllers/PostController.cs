@@ -1,7 +1,3 @@
-using System.Runtime.CompilerServices;
-using Domain.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-
 namespace WebApi.Controllers;
 
 [Route("api/(controller)")]

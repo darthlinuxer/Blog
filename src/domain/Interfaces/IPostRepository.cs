@@ -1,8 +1,8 @@
 namespace Domain.Interfaces;
 
-public interface IPostRepository: IGenericRepository<Post>
+public interface IPostRepository : IGenericRepository<PostModel>
 {
-    public ConfiguredCancelableAsyncEnumerable<Post>? GetAllByAuthorAsync(string username,
+    public ConfiguredCancelableAsyncEnumerable<PostModel>? GetAllByAuthorAsync(string username,
                                                                           int page,
                                                                           int count,
                                                                           bool descending,

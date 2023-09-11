@@ -1,21 +1,20 @@
-using Domain.Interfaces;
-using Infra;
+using webapi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var _configuration = builder.Configuration;
-var _key = Environment.GetEnvironmentVariable(DefaultProperties.JWTTokenPwd) ?? "";
+var _key = Environment.GetEnvironmentVariable(StaticText.JWTTokenPwd) ?? "";
 
+builder.Services.AddCarter();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(ConfigureSwaggerGen);
 builder.Services.AddHealthChecks();
 
 builder.Services.ConfigureJwtAndPolicies();
+builder.Services.ConfigIdentityCore();
 builder.Services.ConfigCustomDbContext(_configuration);
+builder.Services.AddCustomScopedServices();
 
-builder.Services.AddSingleton(new JwtTokenService(_key));
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
@@ -29,8 +28,13 @@ if (app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 
 app.MapHealthChecks("/health");
-app.MapCredentialsEndpoints();
-app.MapPostEndpoints();
+app.MapCarter();
+
+// Role seeding
+using var scope = app.Services.CreateScope();
+var serviceProvider = scope.ServiceProvider;
+var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+RoleInitializer.InitializeAsync(roleManager).Wait();
 
 app.Run();
 

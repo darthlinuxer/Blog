@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace Infra;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class

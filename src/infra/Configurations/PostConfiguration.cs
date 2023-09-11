@@ -1,8 +1,8 @@
 namespace Infra.Configurations;
 
-public class PostConfiguration : IEntityTypeConfiguration<Post>
+public class PostConfiguration : IEntityTypeConfiguration<PostModel>
 {
-       public void Configure(EntityTypeBuilder<Post> builder)
+       public void Configure(EntityTypeBuilder<PostModel> builder)
        {
               // Define the primary key
               builder.HasKey(p => p.PostId);
@@ -31,7 +31,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 
               builder.HasOne(p => p.Author)
                      .WithMany(u => u.Posts)
-                     .HasForeignKey(p => p.AuthorId) 
+                     .HasForeignKey(p => p.AuthorId)
                      .OnDelete(DeleteBehavior.Restrict);
        }
 }

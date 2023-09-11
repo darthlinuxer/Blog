@@ -1,22 +1,10 @@
-using Infra;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-
 namespace WebApi.Extensions;
-public static partial class ServiceExtentions
+
+public static class IdentityCoreExtensions
 {
-    public static IServiceCollection ConfigCustomDbContext(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigIdentityCore(this IServiceCollection services)
     {
-        services.AddPooledDbContextFactory<BlogContext>(options =>
-        {
-            options.UseInMemoryDatabase("Blog.db");
-        });
-
-        services.AddScoped(implementationFactory: sp => sp
-              .GetRequiredService<IDbContextFactory<BlogContext>>()
-              .CreateDbContext());
-
-        services.AddIdentityCore<BlogUser>(
+         services.AddIdentityCore<BlogUser>(
             options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
@@ -29,9 +17,11 @@ public static partial class ServiceExtentions
                 options.Password.RequireLowercase = true;
                 options.Password.RequireUppercase = true;
             })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<BlogContext>()
-                .AddSignInManager<BlogUser>()
-                .AddUserManager<BlogUser>();
+                .AddSignInManager<SignInManager<BlogUser>>()
+                .AddUserManager<UserManager<BlogUser>>()
+                .AddRoleManager<RoleManager<IdentityRole>>();
 
         return services;
     }
