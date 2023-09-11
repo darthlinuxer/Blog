@@ -12,7 +12,13 @@ public class CredentialEndpoints : ICarterModule
         app.MapPost("register", Register).WithName(nameof(Register));
     }
 
-    public static IResult LoggedUser(ClaimsPrincipal user) => TypedResults.Ok(user);
+    public static IResult LoggedUser(ClaimsPrincipal user) => TypedResults.Ok(new {
+        Username = user.Identity.Name,
+        IsEditor = user.IsInRole("Editor"),
+        IsWriter = user.IsInRole("Writer"),
+        IsPublic = user.IsInRole("Public"),
+        IsAuthenticated = user.Identity.IsAuthenticated
+    });
 
     public static async Task<IResult> Login(
                     [FromBody] LoginRecord input,
@@ -22,7 +28,8 @@ public class CredentialEndpoints : ICarterModule
         if(!blogUser.IsSuccess) return Results.BadRequest(blogUser.Errors);
         var result = await service.LoginAsync(input.Login, input.Password);
         if (!result.IsSuccess) return Results.BadRequest(result.Errors);
-        return Results.Ok(blogUser);
+        var token = result.Value;
+        return Results.Ok(token);
     }
 
     public static async Task<IResult> Register(

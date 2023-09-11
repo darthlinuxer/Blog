@@ -17,4 +17,4 @@ global using Microsoft.AspNetCore.Authorization;
 global using WebApi.Extensions;
 global using System.Text;
 global using Microsoft.IdentityModel.Tokens;
-global using System.IdentityModel.Tokens.Jwt;
+global using System.Text.Json.Serialization;
