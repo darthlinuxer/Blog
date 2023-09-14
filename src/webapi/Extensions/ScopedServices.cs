@@ -1,4 +1,4 @@
-﻿namespace webapi.Extensions;
+﻿namespace Application.Extensions;
 
 public static class ScopedServices
 {

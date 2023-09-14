@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace webapi.Migrations
+namespace Application.Migrations
 {
     [DbContext(typeof(BlogContext))]
     [Migration("20230911172331_InitialMigrations")]

@@ -1,17 +1,21 @@
-using webapi.Extensions;
+using Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var _configuration = builder.Configuration;
 var _key = Environment.GetEnvironmentVariable(StaticText.JWTTokenPwd) ?? "";
 
-builder.Services.AddCarter();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(ConfigureSwaggerGen);
 builder.Services.AddHealthChecks();
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers();
+builder.Services.Configure<JsonOptions>(options =>
 {
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.MaxDepth = 1;
+    options.JsonSerializerOptions.WriteIndented = true;
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
 });
+builder.Services.AddCarter();
 
 builder.Services.ConfigureJwtAndPolicies();
 builder.Services.ConfigIdentityCore();
@@ -19,6 +23,11 @@ builder.Services.ConfigCustomDbContext(_configuration);
 builder.Services.AddCustomScopedServices();
 
 builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    //Validations will be done inside services, not controllers
+    options.SuppressModelStateInvalidFilter = true;
+});
 
 var app = builder.Build();
 
@@ -30,15 +39,24 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+//app.MapHealthChecks("/health");
+//app.MapCarter();
+app.UseEndpoints(configure =>{
+    configure.MapControllers();
+    configure.MapCarter();
+    configure.MapHealthChecks("/health");
+});
 
-app.MapHealthChecks("/health");
-app.MapCarter();
-
-// Role seeding
+// Role and Editor seeding
 using var scope = app.Services.CreateScope();
 var serviceProvider = scope.ServiceProvider;
 var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+var userService = serviceProvider.GetRequiredService<IUserService>();
 RoleInitializer.InitializeAsync(roleManager).Wait();
+SeedInitializer.InitializeAsync(userService).Wait();
 
 app.Run();
 

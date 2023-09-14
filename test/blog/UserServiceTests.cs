@@ -1,17 +1,25 @@
-using webapi.Extensions;
-
 namespace blog;
 
-public partial class BlogTest
+[TestClass]
+public class UserServiceTests
 {
+    private IUserService _userService;
+
+    public UserServiceTests()
+    {
+        _userService = SharedSetupFixture.UserService;
+    }
+
+    [TestInitialize]
+    public void Seed() => SharedSetupFixture.SeedData();
+
     [TestMethod]
     public async Task GetUserById_ShouldReturnUser()
     {
         //Arrange
-        var userService = _serviceProvider.GetService<IUserService>();
 
         //Act
-        var result = await userService!.RegisterAsync(new UserRecord(
+        var result = await _userService!.RegisterAsync(new UserRecordDTO(
             username: "Anakin",
             email: "vader@deathstar.com",
             password: "123UpperLowerSymbol$",
@@ -19,7 +27,7 @@ public partial class BlogTest
 
         var addedUser = result.Value;
 
-        var userInDb = await userService.GetUserByIdAsync(addedUser.Id);
+        var userInDb = await _userService.GetUserByIdAsync(addedUser.Id);
 
         //Assert
         Assert.IsTrue(result.IsSuccess);
@@ -30,15 +38,14 @@ public partial class BlogTest
     public async Task GetUserByEmail_ShouldReturnUser()
     {
         //Arrange
-        var userService = _serviceProvider.GetService<IUserService>();
 
         //Act
-        var result = await userService!.RegisterAsync(new UserRecord(
+        var result = await _userService!.RegisterAsync(new UserRecordDTO(
             username: "Anakin",
             email: "vader@deathstar.com",
             password: "123UpperLowerSymbol$",
             role: "Writer"));
-        var userInDb = await userService.GetUserByEmailAsync("vader@deathstar.com");
+        var userInDb = await _userService.GetUserByEmailAsync("vader@deathstar.com");
 
         //Assert
         Assert.IsTrue(result.IsSuccess);
@@ -49,15 +56,14 @@ public partial class BlogTest
     public async Task GetUserByName_ShouldReturnUser()
     {
         //Arrange
-        var userService = _serviceProvider.GetService<IUserService>();
 
         //Act
-        var result = await userService!.RegisterAsync(new UserRecord(
+        var result = await _userService.RegisterAsync(new UserRecordDTO(
             username: "Anakin",
             email: "vader@deathstar.com",
             password: "123UpperLowerSymbol$",
             role: "Writer"));
-        var userInDb = await userService.GetUserByNameAsync("Anakin");
+        var userInDb = await _userService.GetUserByNameAsync("Anakin");
 
         //Assert
         Assert.IsTrue(result.IsSuccess);
@@ -69,10 +75,9 @@ public partial class BlogTest
     public async Task CreateUserWithInvalidPassword_ShouldNotCreate()
     {
         //Arrange
-        var userService = _serviceProvider.GetService<IUserService>();
 
         //Act
-        var result = await userService!.RegisterAsync(new UserRecord(
+        var result = await _userService.RegisterAsync(new UserRecordDTO(
             username: "Anakin",
             email: "vader@deathstar.com",
             password: "123",
@@ -86,10 +91,9 @@ public partial class BlogTest
     public async Task CreateUserInInexistentRole_ShouldNotCreate()
     {
         //Arrange
-        var userService = _serviceProvider.GetService<IUserService>();
 
         //Act
-        var result = await userService!.RegisterAsync(new UserRecord(
+        var result = await _userService.RegisterAsync(new UserRecordDTO(
             username: "Anakin",
             email: "vader@deathstar.com",
             password: "123UpperLowerSymbol$",
@@ -104,46 +108,38 @@ public partial class BlogTest
     public async Task GetAllUsersByRole_ShouldReturnAllUsersInRole()
     {
         //Arrange
-        var service = _serviceProvider.GetService<IUserService>();
 
         //Act
-        var result1 = await service!.RegisterAsync(new UserRecord(
+        var result1 = await _userService!.RegisterAsync(new UserRecordDTO(
            username: "Anakin",
            email: "vader@deathstar.com",
            password: "123UpperLowerSymbol$",
            role: "SithLord")); //will not add because SithLord is not a valid Role
 
-        var result2 = await service!.RegisterAsync(new UserRecord(
+        var result2 = await _userService!.RegisterAsync(new UserRecordDTO(
              username: "Leia",
              email: "leia@theprincess.com",
              password: "123UpperLowerSymbol$",
              role: "Editor"));
 
-        var result3 = await service!.RegisterAsync(new UserRecord(
-           username: "Luke",
-           email: "Luke@Rebellion.com",
-           password: "123UpperLowerSymbol$",
-           role: "Public"));
-
-        var result4 = await service!.RegisterAsync(new UserRecord(
+        var result3 = await _userService!.RegisterAsync(new UserRecordDTO(
            username: "Vader",
            email: "vader@deathstar.com",
            password: "123UpperLowerSymbol$",
            role: "Writer"));
 
-        var result5 = await service!.RegisterAsync(new UserRecord(
+        var result4 = await _userService!.RegisterAsync(new UserRecordDTO(
          username: "Palpatine",
          email: "emperor@deathstar.com",
          password: "123UpperLowerSymbol$",
          role: "Writer"));
 
-        var writers = await service.GetAllUsersByRoleAsync("Writer");
+        var writers = await _userService.GetAllUsersByRoleAsync("Writer");
 
         Assert.IsFalse(result1.IsSuccess);
         Assert.IsTrue(result2.IsSuccess);
         Assert.IsTrue(result3.IsSuccess);
-        Assert.IsTrue(result4.IsSuccess);
-        Assert.IsTrue(writers.Value.Count() == 2);
+        Assert.IsTrue(writers.Value.Count() == 3);
         Assert.IsNotNull(writers.Value.Any(c => c.UserName == "Vader"));
         Assert.IsNotNull(writers.Value.Any(c => c.UserName == "Palpatine"));
     }
@@ -152,9 +148,8 @@ public partial class BlogTest
     public async Task LoginWithCorrectPassword_ShouldReturnValidToken()
     {
         //Arrange
-        var service = _serviceProvider.GetService<IUserService>();
-        var result = await service!.RegisterAsync(
-            new UserRecord(
+        var result = await _userService!.RegisterAsync(
+            new UserRecordDTO(
                             username: "Palpatine",
                             email: "emperor@deathstar.com",
                             password: "123UpperLowerSymbol$",
@@ -162,16 +157,20 @@ public partial class BlogTest
 
         //Act
 
-        var loginResult = await service.LoginAsync("Palpatine", "123UpperLowerSymbol$");
+        var loginResult = await _userService.LoginAsync("Palpatine", "123UpperLowerSymbol$");
         var token = loginResult.Value;
         ClaimsPrincipal principal = null;
         var isTokenValid = TokenExtensions.ValidateJwtToken(token, out principal);
-
+        var sid = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid);
+        var email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+        var name = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
         //Assert
         Assert.IsTrue(result.IsSuccess);
         Assert.IsTrue(loginResult.IsSuccess);
         Assert.IsTrue(isTokenValid);
         Assert.IsTrue(principal.IsInRole("Writer"));
-        Assert.IsTrue(principal.Identity.Name == "Palpatine");
+        Assert.IsTrue(name?.Value == "Palpatine");
+        Assert.IsTrue(email?.Value == result.Value.Email);
+        Assert.IsTrue(sid?.Value == result.Value.Id);
     }
 }

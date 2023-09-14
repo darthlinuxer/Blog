@@ -1,6 +1,3 @@
-using System.Reflection;
-using webapi.Extensions;
-
 namespace Application.Services;
 
 public class UserService : IUserService
@@ -20,7 +17,7 @@ public class UserService : IUserService
         _roleManager = roleManager;
     }
 
-    public async Task<Result<BlogUser>> RegisterAsync(UserRecord input)
+    public async Task<Result<BlogUser>> RegisterAsync(UserRecordDTO input)
     {
         var roleInDb = await _roleManager.RoleExistsAsync(input.role);
         if (roleInDb is false)
@@ -87,11 +84,22 @@ public class UserService : IUserService
         return Result<string>.Success(token);
     }
 
-    public async Task<Result<BlogUser>> DeleteYourAccountAsync(BlogUser loggedUser)
+    public async Task<Result<bool>> IsUserInRoleAsync(string username, string role)
     {
-        var result = await _userManager.DeleteAsync(loggedUser);
-        if (!result.Succeeded) return Result<BlogUser>.Failure(result.Errors.Select(c => c.Description).ToList());
-        return Result<BlogUser>.Success(loggedUser);
+        var user = await _userManager.FindByNameAsync(username);
+        if (user is null) return Result<bool>.Failure([$"User {username} does not exist!"]);
+        var isInRole = await _userManager.IsInRoleAsync(user, role);
+        if (!isInRole) return Result<bool>.Failure([$"User {username} is not in role {role}"]);
+        return Result<bool>.Success(isInRole);
+    }
+
+    public async Task<Result<bool>> IsUserIdInRoleAsync(string userId, string role)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null) return Result<bool>.Failure([$"UserID {userId} does not exist!"]);
+        var isInRole = await _userManager.IsInRoleAsync(user, role);
+        if (!isInRole) return Result<bool>.Failure([$"UserID {userId} is not in role {role}"]);
+        return Result<bool>.Success(isInRole);
     }
 
     public async Task<Result<bool>> ChangePasswordAsync(BlogUser user, string oldPassword, string newPassword)
@@ -112,11 +120,22 @@ public class UserService : IUserService
 
     public async Task<Result<bool>> ResetPasswordAsync(string email, string token, string newPassword)
     {
+        ;
         var user = await _userManager.FindByEmailAsync(email);
         if (user is null) return Result<bool>.Failure(["User does not exist!"]);
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
         if (!result.Succeeded) return Result<bool>.Failure(result.Errors.Select(c => c.Description).ToList());
         return Result<bool>.Success(true);
+    }
+
+    //---------------------------------------------------------------------------
+    public async Task<Result<BlogUser>> DeleteAccountWithId(string id)
+    {
+        var userExistResult = await GetUserByIdAsync(id);
+        if(!userExistResult.IsSuccess) return Result<BlogUser>.Failure(userExistResult.Errors);
+        var result = await _userManager.DeleteAsync(userExistResult.Value);
+        if (!result.Succeeded) return Result<BlogUser>.Failure(result.Errors.Select(c => c.Description).ToList());
+        return Result<BlogUser>.Success(userExistResult.Value);
     }
 
     //---------------------------------------------------------------------------

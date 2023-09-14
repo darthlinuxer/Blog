@@ -2,30 +2,49 @@ namespace Domain.Interfaces;
 
 public interface IPostService
 {
-    ConfiguredCancelableAsyncEnumerable<PostModel>? GetAllAsync(string where,
-                                                           string orderby,
-                                                           int page,
-                                                           int count,
-                                                           bool descending,
-                                                           string[]? includeNavigationNames,
-                                                           bool asNoTracking,
-                                                           CancellationToken ct);
+    ConfiguredCancelableAsyncEnumerable<PostModel> GetAllAsync(
+                                                           CancellationToken ct,
+                                                           string orderby = "PostId",
+                                                           int page = 1,
+                                                           int count = 10,
+                                                           bool descending = true,
+                                                           string[]? includeNavigationNames = null,
+                                                           bool asNoTracking = true
+                                                           );
 
-    ConfiguredCancelableAsyncEnumerable<PostModel>? GetAllByAuthorAsync(string username,
-                                                                   int page,
-                                                                   int count,
-                                                                   bool descending,
-                                                                   bool asNoTracking,
-                                                                   string[]? navigation,
-                                                                   CancellationToken ct);
+    ConfiguredCancelableAsyncEnumerable<PostModel> GetAllFilteredAsync(
+                                                           string where,
+                                                           CancellationToken ct,
+                                                           string orderby = "PostId",
+                                                           int page = 1,
+                                                           int count = 10,
+                                                           bool descending = true,
+                                                           string[]? includeNavigationNames = null,
+                                                           bool asNoTracking = true
+                                                           );
+
+    ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByAuthorAsync(
+        string author,
+        CancellationToken ct,
+        int page = 1,
+        int count = 10,
+        bool descending = true,
+        bool asNoTracking = true,
+        string[]? navigation = null
+        );
 
     Task<Result<PostModel>> GetAsync(Expression<Func<PostModel, bool>> p,
                                 CancellationToken ct,
                                 bool asNoTracking,
                                 string[]? includeNavigationNames);
 
-    Task<Result<PostModel>> AddAsync(PostModel entity);
-    Result<PostModel> Remove(PostModel entity);
-    Result<PostModel> Update(PostModel entity);
-    Task<int> CompleteAsync();
+    Task<Result<PostModel>> AddAsync(
+        PostModelDTO entity);
+
+    Task<Result<PostModel>> RemoveAsync(int postId, CancellationToken ct);
+
+    Task<Result<PostModel>> UpdateAsync(
+        PostModelDTO entity,
+        CancellationToken ct
+        );
 }

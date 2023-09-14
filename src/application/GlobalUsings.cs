@@ -8,3 +8,5 @@ global using Domain.Models;
 global using System.Runtime.CompilerServices;
 global using Microsoft.AspNetCore.Identity;
 global using System.Text;
+global using Application.Extensions;
+global using FluentValidation;

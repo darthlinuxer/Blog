@@ -1,7 +1,4 @@
-﻿using Infra.Configurations;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-
-namespace Infra;
+﻿namespace Infra;
 public class BlogContext : IdentityDbContext<BlogUser>
 {
     public BlogContext(DbContextOptions<BlogContext> options) : base(options)

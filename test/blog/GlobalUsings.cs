@@ -8,3 +8,6 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Identity;
 global using System.Security.Claims;
+global using Application.Extensions;
+global using FluentValidation;
+global using WebApi.Validations;

@@ -1,4 +1,4 @@
-using webapi.Extensions;
+using Application.Extensions;
 
 namespace WebApi.Extensions;
 public static class AuthExtension
@@ -30,7 +30,7 @@ public static class AuthExtension
             config.AddPolicy("PublicPolicy", policyBuilder =>
             {
                 policyBuilder.RequireAuthenticatedUser();
-                policyBuilder.RequireRole("Public");
+                policyBuilder.RequireRole("Public", "Writer", "Editor");
             });
             config.AddPolicy("WriterPolicy", policyBuilder =>
             {

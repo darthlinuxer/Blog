@@ -25,7 +25,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
-    public ConfiguredCancelableAsyncEnumerable<T>? GetAllAsync(string where,
+    public ConfiguredCancelableAsyncEnumerable<T> GetAllAsync(string where,
                                                                string orderby,
                                                                int page,
                                                                int count,
@@ -40,10 +40,10 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
             var mainQuery = _context.Set<T>().Where(where).OrderBy($"{orderby} {direction}").Skip((page - 1) * count).Take(count);
             if (asNoTracking) mainQuery = mainQuery?.AsNoTracking();
             if (includeNavigationNames?.Length > 0) foreach (var navigation in includeNavigationNames) mainQuery = mainQuery!.Include(navigation);
-            var result = mainQuery?.AsAsyncEnumerable().WithCancellation(ct);
+            var result = mainQuery!.AsAsyncEnumerable().WithCancellation(ct);
             return result;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             throw;
         }
@@ -51,22 +51,43 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
     public async Task<T?> AddAsync(T entity)
     {
-        await _context.Set<T>().AddAsync(entity);
-        return entity;
+        try
+        {
+            await _context.Set<T>().AddAsync(entity);
+            return entity;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
 
     public T Remove(T entity)
     {
-        _context.Set<T>().Remove(entity);
-        return entity;
+        try
+        {
+            _context.Set<T>().Remove(entity);
+            return entity;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     public T Update(T entity)
     {
-        var entry = _context.Set<T>().Update(entity);
-        entry.State = EntityState.Modified;
-        return entity;
+        try
+        {
+            var entry = _context.Set<T>().Update(entity);
+            entry.State = EntityState.Modified;
+            return entity;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
 }

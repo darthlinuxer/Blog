@@ -1,4 +1,4 @@
-namespace WebApi.Extensions;
+namespace WebApi.Seeds;
 
 public static class RoleInitializer
 {

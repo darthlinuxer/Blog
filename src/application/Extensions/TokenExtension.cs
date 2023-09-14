@@ -1,4 +1,4 @@
-namespace webapi.Extensions;
+namespace Application.Extensions;
 
 public class TokenExtensions
 {
@@ -37,8 +37,9 @@ public class TokenExtensions
     public static string CreateToken(BlogUser user, IList<string> roles)
     {
         var claims = new List<Claim>{
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
+            new Claim(ClaimTypes.Sid, user.Id),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Name, user.UserName)
         };
 
         foreach (var role in roles)
