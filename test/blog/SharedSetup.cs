@@ -3,17 +3,17 @@ using System.Text;
 
 namespace blog;
 
-public static class SharedSetupFixture
+public class SharedSetup
 {
-    public static ServiceProvider ServiceProvider;
-    public static IPostService PostService;
-    public static IUserService UserService;
-    public static ICommentService CommentService;
-    public static RoleManager<IdentityRole> RoleManager;
+    public ServiceProvider ServiceProvider;
+    public IPostService PostService;
+    public IUserService UserService;
+    public ICommentService CommentService;
+    public RoleManager<IdentityRole> RoleManager;
 
     private static int dbCounter = 0;
 
-    static SharedSetupFixture()
+    public SharedSetup()
     {
         dbCounter++;
         var services = new ServiceCollection();
@@ -97,7 +97,7 @@ public static class SharedSetupFixture
         CommentService = ServiceProvider.GetRequiredService<ICommentService>();
     }
 
-    public static void SeedData()
+    public void SeedData()
     {
         string[] roles = ["Writer", "Editor", "Public"];
 

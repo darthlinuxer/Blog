@@ -4,14 +4,16 @@ namespace blog;
 public class UserServiceTests
 {
     private IUserService _userService;
+    private SharedSetup setup;
 
     public UserServiceTests()
     {
-        _userService = SharedSetupFixture.UserService;
+        setup = new SharedSetup();
+        _userService = setup!.UserService;
     }
 
     [TestInitialize]
-    public void Seed() => SharedSetupFixture.SeedData();
+    public void Seed() => setup.SeedData();
 
     [TestMethod]
     public async Task GetUserById_ShouldReturnUser()

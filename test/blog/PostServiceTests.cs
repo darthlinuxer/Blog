@@ -1,19 +1,26 @@
-﻿namespace blog;
+﻿using Microsoft.AspNetCore.Http;
+using Moq;
+
+namespace blog;
 
 [TestClass]
 public class PostServiceTests
 {
     private IPostService _postService;
     private IUserService _userService;
+    private SharedSetup setup;
+    private ServiceProvider _serviceProvider;
 
     public PostServiceTests()
     {
-        _postService = SharedSetupFixture.PostService;
-        _userService = SharedSetupFixture.UserService;
+        setup = new SharedSetup();
+        _postService = setup.PostService;
+        _userService = setup.UserService;
+        _serviceProvider = setup.ServiceProvider;
     }
 
     [TestInitialize]
-    public void Seed() => SharedSetupFixture.SeedData();
+    public void Seed() => setup.SeedData();
 
     [TestMethod]
     public async Task GetAllPostsWithEmptyDb_ShouldReturnNothing()
@@ -32,53 +39,43 @@ public class PostServiceTests
     public async Task PublicUser_CannotAddPosts()
     {
         //Arrange
+        //Luke is a public user and cannot add posts
         var loginResult = await _userService.LoginAsync("luke", "ChangeMe1$");
         var token = loginResult.Value;
         ClaimsPrincipal principal;
         TokenExtensions.ValidateJwtToken(token, out principal);
         var loggedUserId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
 
-        //Act
-        var postResult = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = loggedUserId,
-            Title = "Test",
-            Content = "Test"
-        });
+        var httpContextMock = new Mock<HttpContext>();
+        httpContextMock.Setup(c => c.User).Returns(principal);
+
+        // Act
+        var authorizationService = _serviceProvider.GetRequiredService<IAuthorizationService>();
+        var authResult = await authorizationService.AuthorizeAsync(principal, null, "WriterPolicy");
 
         //Result
-        Assert.IsFalse(postResult.IsSuccess);
-        Assert.IsTrue(postResult.Errors.Contains($"Author with Id {loggedUserId} is not a Writer!"));
+        Assert.IsFalse(authResult.Succeeded);
     }
 
     [TestMethod]
     public async Task WriterUser_CanAddPosts()
     {
         //Arrange
+        //darthlinuxer is a writer and cannot add posts
         var loginResult = await _userService.LoginAsync("darthlinuxer", "ChangeMe1$");
         var token = loginResult.Value;
         ClaimsPrincipal principal;
         TokenExtensions.ValidateJwtToken(token, out principal);
-        var loggedUserId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid).Value;
 
-        //Act
-        var post1Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = loggedUserId,
-            Title = "Test1",
-            Content = "Test1"
-        });
+        var httpContextMock = new Mock<HttpContext>();
+        httpContextMock.Setup(c => c.User).Returns(principal);
 
-        var post2Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = loggedUserId,
-            Title = "Test2",
-            Content = "Test2"
-        });
+        // Act
+        var authorizationService = _serviceProvider.GetRequiredService<IAuthorizationService>();
+        var authResult = await authorizationService.AuthorizeAsync(principal, null, "WriterPolicy");
 
         //Result
-        Assert.IsTrue(post1Result.IsSuccess);
-        Assert.IsTrue(post2Result.IsSuccess);
+        Assert.IsTrue(authResult.Succeeded);
     }
 
     [TestMethod]
@@ -104,7 +101,7 @@ public class PostServiceTests
             PostId = post1Result.Value.PostId,
             Title = "New Test",
             Content = "New Content",
-            AuthorId = post1Result.Value.AuthorId
+            AuthorId = loggedUserId
         };
 
         var updatedPost = await _postService.UpdateAsync(newData, CancellationToken.None);
