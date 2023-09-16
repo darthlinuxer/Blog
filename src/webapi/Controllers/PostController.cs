@@ -239,7 +239,7 @@ public class PostsController : ControllerBase
     }
 
     [HttpPost]
-    [Route("getallpostsfiltered")]
+    [Route("editorgetallpostsfiltered")]
     [Authorize("EditorPolicy")]
     public async IAsyncEnumerable<PostModel> GetAllPostsFilteredAsync(
         [FromBody] PaginationRecord pagination,
@@ -262,22 +262,49 @@ public class PostsController : ControllerBase
         }
     }
 
+     [HttpPost]
+    [Route("editorgetallpostsbyauthorandstatus")]
+    [Authorize("EditorPolicy")]
+    public async IAsyncEnumerable<PostModel?> GetAllPostsByAuthorAndStatusAsync(
+        [FromBody] PaginationRecord pagination,
+        [FromQuery] string author,
+        [FromQuery] string status,
+        [EnumeratorCancellation] CancellationToken ct)
+    {
+        PostStatus postStatus;
+        if (!Enum.TryParse(status, out postStatus)) yield return null;
+        var posts = _service.GetAllByAuthorNameAsync(
+            author,
+            ct: ct,
+            orderBy: pagination.orderby,
+            page: pagination.page,
+            count: pagination.count,
+            descending: pagination.descending,
+            asNoTracking: pagination.asNoTracking,
+            postStatus: postStatus);
+
+        await foreach (var post in posts.WithCancellation(ct))
+        {
+            if (ct.IsCancellationRequested) break;
+            yield return post;
+        }
+    }
+
     [HttpPost]
-    [Route("getallposts")]
+    [Route("getallpublishedposts")]
     [Authorize("PublicPolicy")]
-    public async IAsyncEnumerable<PostModel> GetAllPublishedPostsAsync(
-       [EnumeratorCancellation] CancellationToken ct,
-       [AsParameters] PaginationRecord pagination,
-       [FromQuery] string orderby = "Title")
+    public async IAsyncEnumerable<PostModel?> GetAllPublishedPostsAsync(
+        [FromBody] PaginationRecord pagination,
+        [EnumeratorCancellation] CancellationToken ct)
     {
         var posts = _service.GetAllAsync(ct,
-                                         orderby: orderby,
+                                         orderby: pagination.orderby,
                                          page: pagination.page,
                                          count: pagination.count,
                                          descending: pagination.descending,
-                                         ["Author", "Comments"],
+                                         includeNavigationNames: ["Author", "Comments"],
                                          asNoTracking: pagination.asNoTracking,
-                                         PostStatus.published
+                                         postStatus:PostStatus.published
                                          );
 
         await foreach (var post in posts.WithCancellation(ct))

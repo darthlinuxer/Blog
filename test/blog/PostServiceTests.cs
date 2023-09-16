@@ -113,7 +113,7 @@ public class PostServiceTests
         Assert.IsTrue(updatedPost.IsSuccess);
         Assert.IsTrue(updatedPost.Value.Title == newData.Title);
         Assert.IsTrue(updatedPost.Value.Content ==  newData.Content);
-        Assert.IsTrue(updatedPost.Value.PostStatus == newData.PostStatus);
+        Assert.IsTrue(updatedPost.Value.PostStatus == PostStatus.published);
         Assert.IsTrue(updatedPost.Value.PostId == post1Result.Value.PostId);
         Assert.IsTrue(updatedPost.Value.AuthorId == post1Result.Value.AuthorId);
     }

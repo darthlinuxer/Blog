@@ -17,7 +17,14 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
        string[]? navigation = null,
        PostStatus postStatus = PostStatus.published)
     {
-        return GetAllAsync($"PostId > 0 && PostStatus == \"{postStatus}\"", orderby: orderBy, page, count, descending, navigation, asNoTracking, ct);
+        return GetAllAsync(where: $"PostId > 0 && PostStatus == \"{postStatus}\"",
+                           orderby: orderBy,
+                           page: page,
+                           count: count,
+                           descending: descending,
+                           includeNavigationNames: navigation,
+                           asNoTracking: asNoTracking,
+                           ct: ct);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllFilteredAsync(
@@ -30,7 +37,14 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
        bool asNoTracking = true,
        string[]? navigation = null)
     {
-        return GetAllAsync(where, orderBy, page, count, descending, navigation, asNoTracking, ct);
+        return GetAllAsync(where: where,
+                           orderby: orderBy,
+                           page: page,
+                           count: count,
+                           descending: descending,
+                           includeNavigationNames: navigation,
+                           asNoTracking: asNoTracking,
+                           ct: ct);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorIdAsync(string authorId,
@@ -43,7 +57,15 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         string[]? navigation = null,
         PostStatus postStatus = PostStatus.published)
     {
-        return GetAllAsync($"AuthorId == \"{authorId}\" && PostStatus == \"{postStatus}\"", orderby: orderBy, page, count, descending, navigation, asNoTracking, ct);
+        return GetAllAsync(
+            where: $"AuthorId == \"{authorId}\" && PostStatus == \"{postStatus}\"",
+            orderby: orderBy,
+            page: page,
+            count: count,
+            descending: descending,
+            includeNavigationNames: navigation,
+            asNoTracking: asNoTracking,
+            ct: ct);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorNameAsync(
@@ -56,7 +78,15 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         bool asNoTracking = true,
         PostStatus postStatus = PostStatus.published)
     {
-        return GetAllAsync($"@Author.Username == \"{author}\" && PostStatus == \"{postStatus}\"", orderby: orderBy, page, count, descending, includeNavigationNames: ["Author", "Comments"], asNoTracking, ct);
+        return GetAllAsync(
+            where: $"@Author.Username == \"{author}\" && PostStatus == \"{postStatus}\"",
+            orderby: orderBy,
+            page: page,
+            count: count,
+            descending: descending,
+            includeNavigationNames: ["Author", "Comments"],
+            asNoTracking: asNoTracking,
+            ct: ct);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByContentsAsync(
@@ -70,7 +100,15 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         string[]? navigation = null,
         PostStatus postStatus = PostStatus.published)
     {
-        return GetAllAsync($"@Content.Contains(\"{content}\") && PostStatus == \"{postStatus}\"", orderby: orderBy, page, count, descending, navigation, asNoTracking, ct);
+        return GetAllAsync(
+            where: $"@Content.Contains(\"{content}\") && PostStatus == \"{postStatus}\"",
+            orderby: orderBy,
+            page: page,
+            count: count,
+            descending: descending,
+            includeNavigationNames: navigation,
+            asNoTracking: asNoTracking,
+            ct: ct);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByTitleAsync(
@@ -84,7 +122,15 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         string[]? navigation = null,
         PostStatus postStatus = PostStatus.published)
     {
-        return GetAllAsync($"@Title.Contains(\"{title}\") && PostStatus == \"{postStatus}\"", orderby: orderBy, page, count, descending, navigation, asNoTracking, ct);
+        return GetAllAsync(
+            where: $"@Title.Contains(\"{title}\") && PostStatus == \"{postStatus}\"",
+            orderby: orderBy,
+            page: page,
+            count: count,
+            descending: descending,
+            includeNavigationNames: navigation,
+            asNoTracking: asNoTracking,
+            ct: ct);
     }
 
 }
