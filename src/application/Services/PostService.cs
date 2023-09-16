@@ -1,6 +1,6 @@
 namespace Application.Services;
 
-public class PostService : IPostService
+public class PostService: IPostService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<PostModelDTO> _validator;
@@ -25,7 +25,7 @@ public class PostService : IPostService
         return Result<PostModel>.Success(addedPost);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<PostModel> GetAllAsync(
+    public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllAsync(
         CancellationToken ct,
         string orderby = "PostId",
         int page = 1,
@@ -44,7 +44,7 @@ public class PostService : IPostService
                                              ct);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<PostModel> GetAllFilteredAsync(
+    public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllFilteredAsync(
         string where,
         CancellationToken ct,
         string orderby = "PostId",
@@ -64,7 +64,7 @@ public class PostService : IPostService
                                              ct);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByAuthorNameAsync(
+    public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorNameAsync(
         string authorname,
         CancellationToken ct,
         int page = 1,
@@ -73,36 +73,33 @@ public class PostService : IPostService
         bool asNoTracking = true
         )
     {
-        return _unitOfWork.Posts.GetAllAsync(where: $"@Author.UserName == \"{authorname}\"",
-                                            orderby: "Title",
+        return _unitOfWork.Posts.GetAllByAuthorNameAsync(authorname,
+                                            ct,
                                             page: page,
                                             count: count,
                                             descending: descending,
-                                            includeNavigationNames: ["Author", "Comments"],
-                                            asNoTracking: asNoTracking,
-                                            ct);
+                                            asNoTracking: asNoTracking);
     }
 
-      public ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByAuthorIdAsync(
-        string authorId,
-        CancellationToken ct,
-        int page = 1,
-        int count = 10,
-        bool descending = true,
-        bool asNoTracking = true,
-        string[]? navigation = null)
+    public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorIdAsync(
+      string authorId,
+      CancellationToken ct,
+      int page = 1,
+      int count = 10,
+      bool descending = true,
+      bool asNoTracking = true,
+      string[]? navigation = null)
     {
-        return _unitOfWork.Posts.GetAllAsync(where: $"AuthorId == \"{authorId}\"",
-                                          orderby: "Title",
-                                          page: page,
-                                          count: count,
-                                          descending: descending,
-                                          includeNavigationNames: navigation,
-                                          asNoTracking: asNoTracking,
-                                          ct);
+        return _unitOfWork.Posts.GetAllByAuthorIdAsync(authorId,
+                                             ct,
+                                             page: page,
+                                             count: count,
+                                             descending: descending,
+                                             asNoTracking: asNoTracking,
+                                             navigation);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByTitleAsync(
+    public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByTitleAsync(
         string title,
         CancellationToken ct,
         int page = 1,
@@ -111,17 +108,16 @@ public class PostService : IPostService
         bool asNoTracking = true,
         string[]? navigation = null)
     {
-        return _unitOfWork.Posts.GetAllAsync(where: $"@Title.Contains(\"{title}\")",
-                                          orderby: "Title",
-                                          page: page,
-                                          count: count,
-                                          descending: descending,
-                                          includeNavigationNames: navigation,
-                                          asNoTracking: asNoTracking,
-                                          ct);
+        return _unitOfWork.Posts.GetAllByTitleAsync(title,
+                                           ct,
+                                           page: page,
+                                           count: count,
+                                           descending: descending,
+                                           asNoTracking: asNoTracking,
+                                           navigation);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByContentsAsync(
+    public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByContentsAsync(
         string content,
         CancellationToken ct,
         int page = 1,
@@ -130,14 +126,13 @@ public class PostService : IPostService
         bool asNoTracking = true,
         string[]? navigation = null)
     {
-        return _unitOfWork.Posts.GetAllAsync(where: $"@Content.Contains(\"{content}\")",
-                                          orderby: "Title",
-                                          page: page,
-                                          count: count,
-                                          descending: descending,
-                                          includeNavigationNames: navigation,
-                                          asNoTracking: asNoTracking,
-                                          ct);
+        return _unitOfWork.Posts.GetAllByContentsAsync(content,
+                                              ct,
+                                              page: page,
+                                              count: count,
+                                              descending: descending,
+                                              asNoTracking: asNoTracking,
+                                              navigation);
     }
 
     public async Task<Result<PostModel>> GetAsync(

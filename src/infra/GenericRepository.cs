@@ -24,7 +24,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
-    public ConfiguredCancelableAsyncEnumerable<T> GetAllAsync(string where,
+    public ConfiguredCancelableAsyncEnumerable<T?> GetAllAsync(string where,
                                                                string orderby,
                                                                int page,
                                                                int count,
@@ -42,7 +42,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
             var result = mainQuery!.AsAsyncEnumerable().WithCancellation(ct);
             return result;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             throw;
         }
