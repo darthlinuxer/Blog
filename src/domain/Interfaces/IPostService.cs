@@ -23,8 +23,37 @@ public interface IPostService
                                                            bool asNoTracking = true
                                                            );
 
-    ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByAuthorAsync(
+    ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByAuthorNameAsync(
         string author,
+        CancellationToken ct,
+        int page = 1,
+        int count = 10,
+        bool descending = true,
+        bool asNoTracking = true
+        );
+
+    ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByAuthorIdAsync(
+       string authorId,
+       CancellationToken ct,
+       int page = 1,
+       int count = 10,
+       bool descending = true,
+       bool asNoTracking = true,
+       string[]? navigation = null
+       );
+
+    ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByTitleAsync(
+        string title,
+        CancellationToken ct,
+        int page = 1,
+        int count = 10,
+        bool descending = true,
+        bool asNoTracking = true,
+        string[]? navigation = null
+        );
+
+    ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByContentsAsync(
+        string content,
         CancellationToken ct,
         int page = 1,
         int count = 10,
@@ -35,8 +64,8 @@ public interface IPostService
 
     Task<Result<PostModel>> GetAsync(Expression<Func<PostModel, bool>> p,
                                 CancellationToken ct,
-                                bool asNoTracking,
-                                string[]? includeNavigationNames);
+                                bool asNoTracking = true,
+                                string[]? includeNavigationNames = null);
 
     Task<Result<PostModel>> AddAsync(
         PostModelDTO entity);
@@ -47,4 +76,5 @@ public interface IPostService
         PostModelDTO entity,
         CancellationToken ct
         );
+
 }

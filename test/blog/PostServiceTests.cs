@@ -108,9 +108,206 @@ public class PostServiceTests
 
         //Result
         Assert.IsTrue(post1Result.IsSuccess);
+        Assert.IsTrue(updatedPost.IsSuccess);
         Assert.IsTrue(updatedPost.Value.Title == "New Test");
         Assert.IsTrue(updatedPost.Value.Content == "New Content");
         Assert.IsTrue(updatedPost.Value.PostId == post1Result.Value.PostId);
         Assert.IsTrue(updatedPost.Value.AuthorId == post1Result.Value.AuthorId);
+    }
+
+    [TestMethod]
+    public async Task GetAllPostsFromWriter_ShouldReturnPosts()
+    {
+        //Arrange
+        //Add another writer
+        var user = await _userService.RegisterAsync(new UserRecordDTO(
+            "Palpatine",
+            "ChangeMe1$",
+            "emperor@deathstar.com",
+            "Writer"
+        ));
+
+        var darthLinuxerLoggedResult = await _userService.LoginAsync("darthlinuxer", "ChangeMe1$");
+        var token = darthLinuxerLoggedResult.Value;
+        ClaimsPrincipal principal;
+        TokenExtensions.ValidateJwtToken(token, out principal);
+        var darthLinuxerId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var darthlinuxerName = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
+
+        //Act
+        //Adding 2 posts from Writer DarthLinuxer
+        var post1Result = await _postService.AddAsync(new PostModelDTO()
+        {
+            AuthorId = darthLinuxerId,
+            Title = "Test1",
+            Content = "Content1"
+        });
+
+        var post2Result = await _postService.AddAsync(new PostModelDTO()
+        {
+            AuthorId = darthLinuxerId,
+            Title = "Test2",
+            Content = "Content2"
+        });
+
+        var palpatineLoggedResult = await _userService.LoginAsync("palpatine", "ChangeMe1$");
+        token = palpatineLoggedResult.Value;
+        TokenExtensions.ValidateJwtToken(token, out principal);
+        var palpatineId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var palpatineName = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
+
+        var post3Result = await _postService.AddAsync(new PostModelDTO()
+        {
+            AuthorId = palpatineId,
+            Title = "Test3",
+            Content = "Content3"
+        });
+
+        var ct = new CancellationToken();
+        var palpatinePosts = _postService.GetAllByAuthorNameAsync(palpatineName, ct, 1, 10, true, true);
+        List<PostModel> palpatinePostsInDb = new();
+        await foreach (var post in palpatinePosts.WithCancellation(ct))
+        {
+            palpatinePostsInDb.Add(post);
+        }
+
+        var allPosts = _postService.GetAllAsync(ct);
+        var allPostsInDb = new List<PostModel>();
+        await foreach (var post in allPosts.WithCancellation(ct))
+        {
+            allPostsInDb.Add(post);
+        }
+
+        //Assert
+        Assert.IsTrue(post1Result.IsSuccess);
+        Assert.IsTrue(post2Result.IsSuccess);
+        Assert.IsTrue(post3Result.IsSuccess);
+        Assert.IsTrue(palpatinePostsInDb.Count() == 1);
+        Assert.IsTrue(palpatinePostsInDb.Any(c => c.Title == post3Result.Value.Title));
+        Assert.IsTrue(palpatinePostsInDb.Any(c => c.Content == post3Result.Value.Content));
+        Assert.IsTrue(allPostsInDb.Count() == 3);
+    }
+
+    [TestMethod]
+    public async Task GetAllPostsByAuthorId_ShouldReturnPosts()
+    {
+        //Arrange
+        var darthLinuxerLoggedResult = await _userService.LoginAsync("darthlinuxer", "ChangeMe1$");
+        var token = darthLinuxerLoggedResult.Value;
+        ClaimsPrincipal principal;
+        TokenExtensions.ValidateJwtToken(token, out principal);
+        var darthLinuxerId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var darthlinuxerName = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
+
+        //Act
+        //Adding 2 posts from Writer DarthLinuxer
+        var post1Result = await _postService.AddAsync(new PostModelDTO()
+        {
+            AuthorId = darthLinuxerId,
+            Title = "This is a Test Title",
+            Content = "This is a test Content"
+        });
+
+        var post2Result = await _postService.AddAsync(new PostModelDTO()
+        {
+            AuthorId = darthLinuxerId,
+            Title = "This is another Title",
+            Content = "This is another Content"
+        });
+
+        var ct = new CancellationToken();
+        var darthLinuxerPosts = _postService.GetAllByAuthorIdAsync(darthLinuxerId, ct, 1, 10, true, true);
+        List<PostModel> darthLinuxerPostsInDb = new();
+        await foreach (var post in darthLinuxerPosts.WithCancellation(ct))
+        {
+            darthLinuxerPostsInDb.Add(post);
+        }
+
+        //Assert
+        Assert.IsTrue(post1Result.IsSuccess);
+        Assert.IsTrue(post2Result.IsSuccess);
+        Assert.IsTrue(darthLinuxerPostsInDb.Count() == 2);
+    }
+
+     [TestMethod]
+    public async Task GetAllPostsByTitle_ShouldReturnPosts()
+    {
+        //Arrange
+        var darthLinuxerLoggedResult = await _userService.LoginAsync("darthlinuxer", "ChangeMe1$");
+        var token = darthLinuxerLoggedResult.Value;
+        ClaimsPrincipal principal;
+        TokenExtensions.ValidateJwtToken(token, out principal);
+        var darthLinuxerId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var darthlinuxerName = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
+
+        //Act
+        //Adding 2 posts from Writer DarthLinuxer
+        var post1Result = await _postService.AddAsync(new PostModelDTO()
+        {
+            AuthorId = darthLinuxerId,
+            Title = "This is a Test Title",
+            Content = "This is a test Content"
+        });
+
+        var post2Result = await _postService.AddAsync(new PostModelDTO()
+        {
+            AuthorId = darthLinuxerId,
+            Title = "This is another Title",
+            Content = "This is another Content"
+        });
+
+        var ct = new CancellationToken();
+        var darthLinuxerPosts = _postService.GetAllByTitleAsync("another", ct, 1, 10, true, true);
+        List<PostModel> darthLinuxerPostsInDb = new();
+        await foreach (var post in darthLinuxerPosts.WithCancellation(ct))
+        {
+            darthLinuxerPostsInDb.Add(post);
+        }
+
+        //Assert
+        Assert.IsTrue(post1Result.IsSuccess);
+        Assert.IsTrue(post2Result.IsSuccess);
+        Assert.IsTrue(darthLinuxerPostsInDb.Count() == 1);
+    }
+
+     [TestMethod]
+    public async Task GetAllPostsByContent_ShouldReturnPosts()
+    {
+        //Arrange
+        var darthLinuxerLoggedResult = await _userService.LoginAsync("darthlinuxer", "ChangeMe1$");
+        var token = darthLinuxerLoggedResult.Value;
+        ClaimsPrincipal principal;
+        TokenExtensions.ValidateJwtToken(token, out principal);
+        var darthLinuxerId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var darthlinuxerName = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
+
+        //Act
+        //Adding 2 posts from Writer DarthLinuxer
+        var post1Result = await _postService.AddAsync(new PostModelDTO()
+        {
+            AuthorId = darthLinuxerId,
+            Title = "This is a Test Title",
+            Content = "This is a test Content"
+        });
+
+        var post2Result = await _postService.AddAsync(new PostModelDTO()
+        {
+            AuthorId = darthLinuxerId,
+            Title = "This is another Title",
+            Content = "This is another Content"
+        });
+
+        var ct = new CancellationToken();
+        var darthLinuxerPosts = _postService.GetAllByContentsAsync("another", ct, 1, 10, true, true);
+        List<PostModel> darthLinuxerPostsInDb = new();
+        await foreach (var post in darthLinuxerPosts.WithCancellation(ct))
+        {
+            darthLinuxerPostsInDb.Add(post);
+        }
+
+        //Assert
+        Assert.IsTrue(post1Result.IsSuccess);
+        Assert.IsTrue(post2Result.IsSuccess);
+        Assert.IsTrue(darthLinuxerPostsInDb.Count() == 1);
     }
 }

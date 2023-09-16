@@ -12,11 +12,10 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         try
         {
-            var pred = p.Compile();
-            var mainQuery = _context.Set<T>().Where(p);
+            var mainQuery = _context.Set<T>().AsQueryable<T>();
             if (asNoTracking) mainQuery = mainQuery.AsNoTracking();
             if (includeNavigationNames?.Length > 0) foreach (var navigation in includeNavigationNames) mainQuery = mainQuery.Include(navigation);
-            var result = await mainQuery.SingleOrDefaultAsync(ct);
+            var result = await mainQuery.SingleOrDefaultAsync(p, ct);
             return result;
         }
         catch (Exception)
@@ -90,4 +89,13 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
+    public bool Exist(Expression<Func<T, bool>> p)
+    {
+        return _context.Set<T>().Any(p.Compile());
+    }
+
+    public int Count(Expression<Func<T, bool>> p)
+    {
+        return _context.Set<T>().Where(p.Compile()).Count();
+    }
 }

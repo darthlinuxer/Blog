@@ -5,8 +5,8 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
     {
     }
 
-    public ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByAuthorAsync(
-        string author,
+    public ConfiguredCancelableAsyncEnumerable<PostModel> GetAllByAuthorIdAsync(
+        string authorId,
         int page,
         int count,
         bool descending,
@@ -14,7 +14,7 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         string[]? navigation,
         CancellationToken ct)
     {
-        return GetAllAsync(where: $"@Author.UserName==\"{author}\"",
+        return GetAllAsync(where: $"AuthorId==\"{authorId}\"",
                            orderby: "Title",
                            page: page,
                            count: count,

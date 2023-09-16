@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace WebApi.Endpoints;
 
 public class PostMinimalApiEndpoints : ICarterModule
@@ -22,7 +24,8 @@ public class PostMinimalApiEndpoints : ICarterModule
                                           ["Author", "Comments"]);
 
         if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
-        return Results.Ok(postInDb.Value);
+        var options = new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.IgnoreCycles };
+        return Results.Json(postInDb.Value, options);
     }
 
     public async Task<Result<PostModelDTO>> Post([FromBody] PostModelDTO postDTO,
@@ -34,7 +37,8 @@ public class PostMinimalApiEndpoints : ICarterModule
         var addedPost = await service.AddAsync(postDTO);
         if (!addedPost.IsSuccess) return Result<PostModelDTO>.Failure(addedPost.Errors);
 
-        var postAdded = new PostModelDTO{
+        var postAdded = new PostModelDTO
+        {
             PostId = addedPost.Value.PostId,
             Title = addedPost.Value.Title,
             Content = addedPost.Value.Content,

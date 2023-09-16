@@ -8,9 +8,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(ConfigureSwaggerGen);
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
+
 builder.Services.Configure<JsonOptions>(options =>
 {
-    options.JsonSerializerOptions.MaxDepth = 1;
+    options.JsonSerializerOptions.MaxDepth = 10;
     options.JsonSerializerOptions.WriteIndented = true;
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
@@ -44,7 +45,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 //app.MapHealthChecks("/health");
 //app.MapCarter();
-app.UseEndpoints(configure =>{
+app.UseEndpoints(configure =>
+{
     configure.MapControllers();
     configure.MapCarter();
     configure.MapHealthChecks("/health");
