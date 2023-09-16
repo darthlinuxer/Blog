@@ -5,5 +5,6 @@ public enum PostStatus
     draft,
     pending,
     approved,
-    rejected
+    rejected,
+    published
 }

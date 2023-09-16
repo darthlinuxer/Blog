@@ -5,3 +5,5 @@ global using System.Threading.Tasks;
 global using Domain.Models;
 global using System.Runtime.CompilerServices;
 global using Microsoft.AspNetCore.Identity;
+global using Domain.Enums;
+global using System.Text.Json.Serialization;

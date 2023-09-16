@@ -8,6 +8,9 @@ public class PostModelDTO
 	public DateTime? DatePublished { get; set; }
 	public string? AuthorId {get; set;}
 
+	[JsonIgnore]
+	public PostStatus PostStatus {get; set;} = PostStatus.draft;
+
 	public static implicit operator PostModel(PostModelDTO dto)
 	{
 		return new PostModel
@@ -18,7 +21,8 @@ public class PostModelDTO
 			DatePublished = (dto.DatePublished is null) ?
 							DateTime.Now :
 							dto.DatePublished.Value,
-			AuthorId = dto.AuthorId
+			AuthorId = dto.AuthorId,
+			PostStatus = dto.PostStatus
 		};
 	}
 }

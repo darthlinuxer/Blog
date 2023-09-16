@@ -12,20 +12,147 @@ public class PostsController : ControllerBase
     }
 
     [HttpPost]
-    [Route("getmyposts")]
+    [Route("getallmyposts")]
     [Authorize("WriterPolicy")]
-    public async IAsyncEnumerable<PostModel> GetMyPostsAsync(
+    public async IAsyncEnumerable<PostModel> GetAllMyPostsAsync(
+   [FromBody] PaginationRecord pagination,
+   [EnumeratorCancellation] CancellationToken ct)
+    {
+        var authorId = HttpContext.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var postsAsync = _service.GetAllFilteredAsync(
+                                                 $"AuthorId == \"{authorId}\"",
+                                                 ct,
+                                                 pagination.orderby,
+                                                 pagination.page,
+                                                 pagination.count,
+                                                 pagination.descending,
+                                                 ["Author", "Comments"],
+                                                 pagination.asNoTracking
+                                                 );
+        await foreach (var post in postsAsync.WithCancellation(ct))
+        {
+            if (ct.IsCancellationRequested) break;
+            yield return post;
+        }
+    }
+
+    [HttpPost]
+    [Route("getmypublishedposts")]
+    [Authorize("WriterPolicy")]
+    public async IAsyncEnumerable<PostModel> GetAllMyPublishedPostsAsync(
      [FromBody] PaginationRecord pagination,
      [EnumeratorCancellation] CancellationToken ct)
     {
         var authorId = HttpContext.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
         var postsAsync = _service.GetAllByAuthorIdAsync(authorId,
                                                  ct,
+                                                 pagination.orderby,
                                                  pagination.page,
                                                  pagination.count,
                                                  pagination.descending,
                                                  pagination.asNoTracking,
-                                                 ["Author", "Comments"]
+                                                 ["Author", "Comments"],
+                                                 postStatus: PostStatus.published
+                                                 );
+        await foreach (var post in postsAsync.WithCancellation(ct))
+        {
+            if (ct.IsCancellationRequested) break;
+            yield return post;
+        }
+    }
+
+    [HttpPost]
+    [Route("getmydraftposts")]
+    [Authorize("WriterPolicy")]
+    public async IAsyncEnumerable<PostModel> GetMyDraftPostsAsync(
+     [FromBody] PaginationRecord pagination,
+     [EnumeratorCancellation] CancellationToken ct)
+    {
+        var authorId = HttpContext.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var postsAsync = _service.GetAllByAuthorIdAsync(authorId,
+                                                 ct,
+                                                 pagination.orderby,
+                                                 pagination.page,
+                                                 pagination.count,
+                                                 pagination.descending,
+                                                 pagination.asNoTracking,
+                                                 ["Author", "Comments"],
+                                                 postStatus: PostStatus.draft
+                                                 );
+        await foreach (var post in postsAsync.WithCancellation(ct))
+        {
+            if (ct.IsCancellationRequested) break;
+            yield return post;
+        }
+    }
+
+    [HttpPost]
+    [Route("getmyrejectedposts")]
+    [Authorize("WriterPolicy")]
+    public async IAsyncEnumerable<PostModel> GetMyRejectedPostsAsync(
+    [FromBody] PaginationRecord pagination,
+    [EnumeratorCancellation] CancellationToken ct)
+    {
+        var authorId = HttpContext.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var postsAsync = _service.GetAllByAuthorIdAsync(authorId,
+                                                 ct,
+                                                 pagination.orderby,
+                                                 pagination.page,
+                                                 pagination.count,
+                                                 pagination.descending,
+                                                 pagination.asNoTracking,
+                                                 ["Author", "Comments"],
+                                                 postStatus: PostStatus.rejected
+                                                 );
+        await foreach (var post in postsAsync.WithCancellation(ct))
+        {
+            if (ct.IsCancellationRequested) break;
+            yield return post;
+        }
+    }
+
+    [HttpPost]
+    [Route("getmypendingposts")]
+    [Authorize("WriterPolicy")]
+    public async IAsyncEnumerable<PostModel> GetMyPendingPostsAsync(
+    [FromBody] PaginationRecord pagination,
+    [EnumeratorCancellation] CancellationToken ct)
+    {
+        var authorId = HttpContext.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var postsAsync = _service.GetAllByAuthorIdAsync(authorId,
+                                                 ct,
+                                                 pagination.orderby,
+                                                 pagination.page,
+                                                 pagination.count,
+                                                 pagination.descending,
+                                                 pagination.asNoTracking,
+                                                 ["Author", "Comments"],
+                                                 postStatus: PostStatus.pending
+                                                 );
+        await foreach (var post in postsAsync.WithCancellation(ct))
+        {
+            if (ct.IsCancellationRequested) break;
+            yield return post;
+        }
+    }
+
+    [HttpPost]
+    [Route("getmyapprovedposts")]
+    [Authorize("WriterPolicy")]
+    public async IAsyncEnumerable<PostModel> GetMyApprovedPostsAsync(
+   [FromBody] PaginationRecord pagination,
+   [EnumeratorCancellation] CancellationToken ct)
+    {
+        var authorId = HttpContext.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var postsAsync = _service.GetAllByAuthorIdAsync(authorId,
+                                                 ct,
+                                                 pagination.orderby,
+                                                 pagination.page,
+                                                 pagination.count,
+                                                 pagination.descending,
+                                                 pagination.asNoTracking,
+                                                 ["Author", "Comments"],
+                                                 postStatus: PostStatus.approved
                                                  );
         await foreach (var post in postsAsync.WithCancellation(ct))
         {
@@ -37,7 +164,7 @@ public class PostsController : ControllerBase
     [HttpPost]
     [Route("getallpostsbyauthor")]
     [Authorize("PublicPolicy")]
-    public async IAsyncEnumerable<PostModel> GetAllPostsByAuthorAsync(
+    public async IAsyncEnumerable<PostModel> GetAllPublishedPostsByAuthorAsync(
        [AsParameters] PaginationRecord pagination,
        [FromQuery] string author,
        [EnumeratorCancellation] CancellationToken ct)
@@ -45,10 +172,64 @@ public class PostsController : ControllerBase
         var posts = _service.GetAllByAuthorNameAsync(
                                                  author,
                                                  ct,
+                                                 pagination.orderby,
                                                  pagination.page,
                                                  pagination.count,
                                                  pagination.descending,
-                                                 pagination.asNoTracking
+                                                 pagination.asNoTracking,
+                                                 PostStatus.published
+                                                 );
+        await foreach (var post in posts.WithCancellation(ct))
+        {
+            if (ct.IsCancellationRequested) break;
+            yield return post;
+        }
+    }
+
+    [HttpPost]
+    [Route("getallpostsbytitle")]
+    [Authorize("PublicPolicy")]
+    public async IAsyncEnumerable<PostModel> GetAllPublishedPostsByTitleAsync(
+       [AsParameters] PaginationRecord pagination,
+       [FromQuery] string title,
+       [EnumeratorCancellation] CancellationToken ct)
+    {
+        var posts = _service.GetAllByTitleAsync(
+                                                 title,
+                                                 ct,
+                                                 pagination.orderby,
+                                                 pagination.page,
+                                                 pagination.count,
+                                                 pagination.descending,
+                                                 pagination.asNoTracking,
+                                                 ["Author", "Comments"],
+                                                 PostStatus.published
+                                                 );
+        await foreach (var post in posts.WithCancellation(ct))
+        {
+            if (ct.IsCancellationRequested) break;
+            yield return post;
+        }
+    }
+
+    [HttpPost]
+    [Route("getallpostsbycontent")]
+    [Authorize("PublicPolicy")]
+    public async IAsyncEnumerable<PostModel> GetAllPublishedPostsByContentAsync(
+     [AsParameters] PaginationRecord pagination,
+     [FromQuery] string content,
+     [EnumeratorCancellation] CancellationToken ct)
+    {
+        var posts = _service.GetAllByContentsAsync(
+                                                 content,
+                                                 ct,
+                                                 pagination.orderby,
+                                                 pagination.page,
+                                                 pagination.count,
+                                                 pagination.descending,
+                                                 pagination.asNoTracking,
+                                                 ["Author", "Comments"],
+                                                 PostStatus.published
                                                  );
         await foreach (var post in posts.WithCancellation(ct))
         {
@@ -59,16 +240,15 @@ public class PostsController : ControllerBase
 
     [HttpPost]
     [Route("getallpostsfiltered")]
-    [Authorize("PublicPolicy")]
+    [Authorize("EditorPolicy")]
     public async IAsyncEnumerable<PostModel> GetAllPostsFilteredAsync(
-        [AsParameters] PaginationRecord pagination,
-        [EnumeratorCancellation] CancellationToken ct,
-        [FromQuery] string where = "PostId > 0",
-        [FromQuery] string orderby = "Title")
+        [FromBody] PaginationRecord pagination,
+        [FromQuery] string where,
+        [EnumeratorCancellation] CancellationToken ct)
     {
         var posts = _service.GetAllFilteredAsync(where: where,
                                          ct: ct,
-                                         orderby: orderby,
+                                         orderby: pagination.orderby,
                                          page: pagination.page,
                                          count: pagination.count,
                                          descending: pagination.descending,
@@ -85,7 +265,7 @@ public class PostsController : ControllerBase
     [HttpPost]
     [Route("getallposts")]
     [Authorize("PublicPolicy")]
-    public async IAsyncEnumerable<PostModel> GetAllPostsAsync(
+    public async IAsyncEnumerable<PostModel> GetAllPublishedPostsAsync(
        [EnumeratorCancellation] CancellationToken ct,
        [AsParameters] PaginationRecord pagination,
        [FromQuery] string orderby = "Title")
@@ -96,7 +276,8 @@ public class PostsController : ControllerBase
                                          count: pagination.count,
                                          descending: pagination.descending,
                                          ["Author", "Comments"],
-                                         asNoTracking: pagination.asNoTracking
+                                         asNoTracking: pagination.asNoTracking,
+                                         PostStatus.published
                                          );
 
         await foreach (var post in posts.WithCancellation(ct))

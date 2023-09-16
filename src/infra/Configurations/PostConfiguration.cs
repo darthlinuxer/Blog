@@ -17,6 +17,9 @@ public class PostConfiguration : IEntityTypeConfiguration<PostModel>
 
               builder.Property(p => p.Content)
                      .IsRequired();
+              
+               builder.Property(p => p.PostStatus)
+                     .IsRequired();
 
               builder.Property(p => p.DatePublished)
                      .IsRequired();

@@ -1,6 +1,8 @@
+using Domain.Enums;
+
 namespace Application.Services;
 
-public class PostService: IPostService
+public class PostService : IPostService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<PostModelDTO> _validator;
@@ -32,114 +34,108 @@ public class PostService: IPostService
         int count = 10,
         bool descending = true,
         string[]? includeNavigationNames = null,
-        bool asNoTracking = true)
+        bool asNoTracking = true,
+        PostStatus postStatus = PostStatus.published)
     {
-        return _unitOfWork.Posts.GetAllAsync(where: "PostId > 0",
-                                             orderby,
-                                             page,
-                                             count,
-                                             descending,
-                                             includeNavigationNames,
-                                             asNoTracking,
-                                             ct);
+        return _unitOfWork.Posts.GetAllAsync(ct, orderby, page, count, descending, asNoTracking, includeNavigationNames, postStatus);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllFilteredAsync(
-        string where,
-        CancellationToken ct,
-        string orderby = "PostId",
-        int page = 1,
-        int count = 10,
-        bool descending = true,
-        string[]? includeNavigationNames = null,
-        bool asNoTracking = true)
+    public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllFilteredAsync(string where, CancellationToken ct, string orderby = "PostId", int page = 1, int count = 10, bool descending = true, string[]? includeNavigationNames = null, bool asNoTracking = true)
     {
-        return _unitOfWork.Posts.GetAllAsync(where,
-                                             orderby,
-                                             page,
-                                             count,
-                                             descending,
-                                             includeNavigationNames,
-                                             asNoTracking,
-                                             ct);
+        return _unitOfWork.Posts.GetAllFilteredAsync(where, ct, orderby, page, count, descending, asNoTracking, includeNavigationNames);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorNameAsync(
         string authorname,
         CancellationToken ct,
+        string orderBy = "Title",
         int page = 1,
         int count = 10,
         bool descending = true,
-        bool asNoTracking = true
-        )
+        bool asNoTracking = true,
+        PostStatus postStatus = PostStatus.published)
     {
         return _unitOfWork.Posts.GetAllByAuthorNameAsync(authorname,
                                             ct,
+                                            orderBy: orderBy,
                                             page: page,
                                             count: count,
                                             descending: descending,
-                                            asNoTracking: asNoTracking);
+                                            asNoTracking: asNoTracking,
+                                            postStatus: postStatus);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorIdAsync(
       string authorId,
       CancellationToken ct,
+      string orderBy = "Title",
       int page = 1,
       int count = 10,
       bool descending = true,
       bool asNoTracking = true,
-      string[]? navigation = null)
+      string[]? navigation = null,
+      PostStatus postStatus = PostStatus.published)
     {
         return _unitOfWork.Posts.GetAllByAuthorIdAsync(authorId,
                                              ct,
+                                             orderBy: orderBy,
                                              page: page,
                                              count: count,
                                              descending: descending,
                                              asNoTracking: asNoTracking,
-                                             navigation);
+                                             navigation: navigation,
+                                             postStatus: postStatus);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByTitleAsync(
         string title,
         CancellationToken ct,
+        string orderBy = "Title",
         int page = 1,
         int count = 10,
         bool descending = true,
         bool asNoTracking = true,
-        string[]? navigation = null)
+        string[]? navigation = null,
+        PostStatus postStatus = PostStatus.published)
     {
         return _unitOfWork.Posts.GetAllByTitleAsync(title,
                                            ct,
+                                           orderBy: orderBy,
                                            page: page,
                                            count: count,
                                            descending: descending,
                                            asNoTracking: asNoTracking,
-                                           navigation);
+                                           navigation: navigation,
+                                           postStatus: postStatus);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByContentsAsync(
         string content,
         CancellationToken ct,
+        string orderBy = "Title",
         int page = 1,
         int count = 10,
         bool descending = true,
         bool asNoTracking = true,
-        string[]? navigation = null)
+        string[]? navigation = null,
+        PostStatus postStatus = PostStatus.published)
     {
         return _unitOfWork.Posts.GetAllByContentsAsync(content,
                                               ct,
+                                              orderBy: orderBy,
                                               page: page,
                                               count: count,
                                               descending: descending,
                                               asNoTracking: asNoTracking,
-                                              navigation);
+                                              navigation: navigation,
+                                              postStatus: postStatus);
     }
 
     public async Task<Result<PostModel>> GetAsync(
         Expression<Func<PostModel, bool>> p,
         CancellationToken ct,
-        bool asNoTracking,
-        string[]? includeNavigationNames)
+        bool asNoTracking = true,
+        string[]? includeNavigationNames = null)
     {
         var post = await _unitOfWork.Posts.GetAsync(p,
                                                     ct,
@@ -174,7 +170,7 @@ public class PostService: IPostService
 
     public async Task<Result<PostModel>> RemoveAsync(int postId, CancellationToken ct)
     {
-        var post = await _unitOfWork.Posts.GetAsync(c => c.PostId == postId, ct, asNoTracking: true, includeNavigationNames: null);
+        var post = await _unitOfWork.Posts.GetAsync(c => c.PostId == postId, ct, true, null);
         if (post is null) return Result<PostModel>.Failure([$"Post with id {postId} does not exist!"]);
         var removedPost = _unitOfWork.Posts.Remove(post);
         await _unitOfWork.CompleteAsync();
@@ -190,4 +186,5 @@ public class PostService: IPostService
     {
         return _unitOfWork.Posts.Count(p);
     }
+
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Domain.Enums;
+using Microsoft.AspNetCore.Http;
 using Moq;
 
 namespace blog;
@@ -93,7 +94,7 @@ public class PostServiceTests
         {
             AuthorId = loggedUserId,
             Title = "Test1",
-            Content = "Test1"
+            Content = "Test1",
         });
 
         var newData = new PostModelDTO()
@@ -101,7 +102,8 @@ public class PostServiceTests
             PostId = post1Result.Value.PostId,
             Title = "New Test",
             Content = "New Content",
-            AuthorId = loggedUserId
+            AuthorId = loggedUserId,
+            PostStatus = PostStatus.published
         };
 
         var updatedPost = await _postService.UpdateAsync(newData, CancellationToken.None);
@@ -109,8 +111,9 @@ public class PostServiceTests
         //Result
         Assert.IsTrue(post1Result.IsSuccess);
         Assert.IsTrue(updatedPost.IsSuccess);
-        Assert.IsTrue(updatedPost.Value.Title == "New Test");
-        Assert.IsTrue(updatedPost.Value.Content == "New Content");
+        Assert.IsTrue(updatedPost.Value.Title == newData.Title);
+        Assert.IsTrue(updatedPost.Value.Content ==  newData.Content);
+        Assert.IsTrue(updatedPost.Value.PostStatus == newData.PostStatus);
         Assert.IsTrue(updatedPost.Value.PostId == post1Result.Value.PostId);
         Assert.IsTrue(updatedPost.Value.AuthorId == post1Result.Value.AuthorId);
     }
@@ -141,6 +144,7 @@ public class PostServiceTests
             AuthorId = darthLinuxerId,
             Title = "Test1",
             Content = "Content1"
+            //PostStatus is hidden as draft
         });
 
         var post2Result = await _postService.AddAsync(new PostModelDTO()
@@ -148,6 +152,7 @@ public class PostServiceTests
             AuthorId = darthLinuxerId,
             Title = "Test2",
             Content = "Content2"
+            //PostStatus is hidden as draft
         });
 
         var palpatineLoggedResult = await _userService.LoginAsync("palpatine", "ChangeMe1$");
@@ -160,18 +165,18 @@ public class PostServiceTests
         {
             AuthorId = palpatineId,
             Title = "Test3",
-            Content = "Content3"
+            Content = "Content3",
         });
 
         var ct = new CancellationToken();
-        var palpatinePosts = _postService.GetAllByAuthorNameAsync(palpatineName, ct, 1, 10, true, true);
+        var palpatinePosts = _postService.GetAllByAuthorNameAsync(palpatineName, ct, "Title", 1, 10, true, true, PostStatus.draft);
         List<PostModel> palpatinePostsInDb = new();
         await foreach (var post in palpatinePosts.WithCancellation(ct))
         {
             palpatinePostsInDb.Add(post);
         }
 
-        var allPosts = _postService.GetAllAsync(ct);
+        var allPosts = _postService.GetAllAsync(ct, postStatus: PostStatus.draft); 
         var allPostsInDb = new List<PostModel>();
         await foreach (var post in allPosts.WithCancellation(ct))
         {
@@ -216,7 +221,7 @@ public class PostServiceTests
         });
 
         var ct = new CancellationToken();
-        var darthLinuxerPosts = _postService.GetAllByAuthorIdAsync(darthLinuxerId, ct, 1, 10, true, true);
+        var darthLinuxerPosts = _postService.GetAllByAuthorIdAsync(darthLinuxerId, ct, "Title", 1, 10, true, true, postStatus: PostStatus.draft);
         List<PostModel> darthLinuxerPostsInDb = new();
         await foreach (var post in darthLinuxerPosts.WithCancellation(ct))
         {
@@ -257,7 +262,7 @@ public class PostServiceTests
         });
 
         var ct = new CancellationToken();
-        var darthLinuxerPosts = _postService.GetAllByTitleAsync("another", ct, 1, 10, true, true);
+        var darthLinuxerPosts = _postService.GetAllByTitleAsync("another", ct, "Title", 1, 10, true, true, postStatus: PostStatus.draft);
         List<PostModel> darthLinuxerPostsInDb = new();
         await foreach (var post in darthLinuxerPosts.WithCancellation(ct))
         {
@@ -298,7 +303,7 @@ public class PostServiceTests
         });
 
         var ct = new CancellationToken();
-        var darthLinuxerPosts = _postService.GetAllByContentsAsync("another", ct, 1, 10, true, true);
+        var darthLinuxerPosts = _postService.GetAllByContentsAsync("another", ct, "Title", 1, 10, true, true, postStatus: PostStatus.draft);
         List<PostModel> darthLinuxerPostsInDb = new();
         await foreach (var post in darthLinuxerPosts.WithCancellation(ct))
         {
