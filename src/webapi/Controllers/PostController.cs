@@ -27,8 +27,8 @@ public class PostsController : ControllerBase
                                                  pagination.count,
                                                  pagination.descending,
                                                  ["Author", "Comments"],
-                                                 pagination.asNoTracking
-                                                 );
+                                                 asNoTracking: true);
+                                                 
         await foreach (var post in postsAsync.WithCancellation(ct))
         {
             if (ct.IsCancellationRequested) break;
@@ -50,7 +50,7 @@ public class PostsController : ControllerBase
                                                  pagination.page,
                                                  pagination.count,
                                                  pagination.descending,
-                                                 pagination.asNoTracking,
+                                                 asNoTracking: true,
                                                  ["Author", "Comments"],
                                                  postStatus: PostStatus.published
                                                  );
@@ -75,7 +75,7 @@ public class PostsController : ControllerBase
                                                  pagination.page,
                                                  pagination.count,
                                                  pagination.descending,
-                                                 pagination.asNoTracking,
+                                                 asNoTracking: true,
                                                  ["Author", "Comments"],
                                                  postStatus: PostStatus.draft
                                                  );
@@ -100,7 +100,7 @@ public class PostsController : ControllerBase
                                                  pagination.page,
                                                  pagination.count,
                                                  pagination.descending,
-                                                 pagination.asNoTracking,
+                                                 asNoTracking: true,
                                                  ["Author", "Comments"],
                                                  postStatus: PostStatus.rejected
                                                  );
@@ -125,7 +125,7 @@ public class PostsController : ControllerBase
                                                  pagination.page,
                                                  pagination.count,
                                                  pagination.descending,
-                                                 pagination.asNoTracking,
+                                                 asNoTracking: true,
                                                  ["Author", "Comments"],
                                                  postStatus: PostStatus.pending
                                                  );
@@ -150,7 +150,7 @@ public class PostsController : ControllerBase
                                                  pagination.page,
                                                  pagination.count,
                                                  pagination.descending,
-                                                 pagination.asNoTracking,
+                                                 asNoTracking: true,
                                                  ["Author", "Comments"],
                                                  postStatus: PostStatus.approved
                                                  );
@@ -176,7 +176,7 @@ public class PostsController : ControllerBase
                                                  pagination.page,
                                                  pagination.count,
                                                  pagination.descending,
-                                                 pagination.asNoTracking,
+                                                 asNoTracking: true,
                                                  PostStatus.published
                                                  );
         await foreach (var post in posts.WithCancellation(ct))
@@ -201,7 +201,7 @@ public class PostsController : ControllerBase
                                                  pagination.page,
                                                  pagination.count,
                                                  pagination.descending,
-                                                 pagination.asNoTracking,
+                                                 asNoTracking: true,
                                                  ["Author", "Comments"],
                                                  PostStatus.published
                                                  );
@@ -227,7 +227,7 @@ public class PostsController : ControllerBase
                                                  pagination.page,
                                                  pagination.count,
                                                  pagination.descending,
-                                                 pagination.asNoTracking,
+                                                 asNoTracking: true,
                                                  ["Author", "Comments"],
                                                  PostStatus.published
                                                  );
@@ -243,17 +243,17 @@ public class PostsController : ControllerBase
     [Authorize("EditorPolicy")]
     public async IAsyncEnumerable<PostModel> GetAllPostsFilteredAsync(
         [FromBody] PaginationRecord pagination,
-        [FromQuery] string where,
         [EnumeratorCancellation] CancellationToken ct)
     {
-        var posts = _service.GetAllFilteredAsync(where: where,
-                                         ct: ct,
-                                         orderby: pagination.orderby,
-                                         page: pagination.page,
-                                         count: pagination.count,
-                                         descending: pagination.descending,
-                                         ["Author", "Comments"],
-                                         asNoTracking: pagination.asNoTracking);
+        if (pagination.where is null) yield break;
+        var posts = _service.GetAllFilteredAsync(where: pagination.where,
+                                                 ct: ct,
+                                                 orderby: pagination.orderby,
+                                                 page: pagination.page,
+                                                 count: pagination.count,
+                                                 descending: pagination.descending,
+                                                 ["Author", "Comments"],
+                                                 asNoTracking: true);
 
         await foreach (var post in posts.WithCancellation(ct))
         {
@@ -262,7 +262,7 @@ public class PostsController : ControllerBase
         }
     }
 
-     [HttpPost]
+    [HttpPost]
     [Route("editorgetallpostsbyauthorandstatus")]
     [Authorize("EditorPolicy")]
     public async IAsyncEnumerable<PostModel?> GetAllPostsByAuthorAndStatusAsync(
@@ -272,7 +272,7 @@ public class PostsController : ControllerBase
         [EnumeratorCancellation] CancellationToken ct)
     {
         PostStatus postStatus;
-        if (!Enum.TryParse(status, out postStatus)) yield return null;
+        if (!Enum.TryParse(status, out postStatus)) yield break;
         var posts = _service.GetAllByAuthorNameAsync(
             author,
             ct: ct,
@@ -280,7 +280,7 @@ public class PostsController : ControllerBase
             page: pagination.page,
             count: pagination.count,
             descending: pagination.descending,
-            asNoTracking: pagination.asNoTracking,
+            asNoTracking: true,
             postStatus: postStatus);
 
         await foreach (var post in posts.WithCancellation(ct))
@@ -303,8 +303,8 @@ public class PostsController : ControllerBase
                                          count: pagination.count,
                                          descending: pagination.descending,
                                          includeNavigationNames: ["Author", "Comments"],
-                                         asNoTracking: pagination.asNoTracking,
-                                         postStatus:PostStatus.published
+                                         asNoTracking: true,
+                                         postStatus: PostStatus.published
                                          );
 
         await foreach (var post in posts.WithCancellation(ct))

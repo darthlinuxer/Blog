@@ -136,14 +136,27 @@ public class UserServiceTests
          password: "123UpperLowerSymbol$",
          role: "Writer"));
 
-        var writers = await _userService.GetAllUsersByRoleAsync("Writer");
+        var writersAsync = _userService.GetAllUsersByRole("Writer",
+                                                     1,
+                                                     10,
+                                                     c => c.UserName,
+                                                     true,
+                                                     true,
+                                                     false,
+                                                     CancellationToken.None);
+
+        List<BlogUser> writers = new();
+        await foreach (var writer in writersAsync)
+        {
+            writers.Add(writer);
+        }
 
         Assert.IsFalse(result1.IsSuccess);
         Assert.IsTrue(result2.IsSuccess);
         Assert.IsTrue(result3.IsSuccess);
-        Assert.IsTrue(writers.Value.Count() == 3);
-        Assert.IsNotNull(writers.Value.Any(c => c.UserName == "Vader"));
-        Assert.IsNotNull(writers.Value.Any(c => c.UserName == "Palpatine"));
+        Assert.IsTrue(writers.Count() == 3);
+        Assert.IsNotNull(writers.Any(c => c.UserName == "Vader"));
+        Assert.IsNotNull(writers.Any(c => c.UserName == "Palpatine"));
     }
 
     [TestMethod]

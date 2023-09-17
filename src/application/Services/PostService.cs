@@ -1,18 +1,19 @@
-using Domain.Enums;
-
 namespace Application.Services;
 
 public class PostService : IPostService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<PostModelDTO> _validator;
+    private readonly IValidator<PostLifeCycle> _lifecycleValidator;
 
     public PostService(
         IUnitOfWork unitOfWork,
-        IValidator<PostModelDTO> validator)
+        IValidator<PostModelDTO> validator,
+        IValidator<PostLifeCycle> lifecycleValidator)
     {
         _unitOfWork = unitOfWork;
         _validator = validator;
+        this._lifecycleValidator = lifecycleValidator;
     }
 
     public async Task<Result<PostModel>> AddAsync(
@@ -208,4 +209,29 @@ public class PostService : IPostService
         return _unitOfWork.Posts.Count(p);
     }
 
+    public async Task<Result<PostModel>> ChangePostStatus(ClaimsPrincipal principal, int postId, PostStatus moveToStatus, CancellationToken ct)
+    {
+          var postInDb = await GetAsync(p: p => p.PostId == postId,
+                                          ct: ct,
+                                          asNoTracking: false,
+                                          includeNavigationNames: null);
+            if (!postInDb.IsSuccess) return Result<PostModel>.Failure(postInDb.Errors);
+
+            var authorId = principal.Claims.SingleOrDefault(c=>c.Type == ClaimTypes.Sid)!.Value;
+            var role = principal.Claims.SingleOrDefault(c=>c.Type == ClaimTypes.Role)!.Value;
+
+            var result = _lifecycleValidator.Validate(new PostLifeCycle(){
+                PostId = postInDb.Value.PostId,
+                AuthorIdRequestingChange = authorId,
+                Status = postInDb.Value.PostStatus,
+                MoveToStatus = moveToStatus,                
+                Role = role              
+            });
+
+            if(!result.IsValid) return Result<PostModel>.Failure(result.Errors.Select(c=>c.ErrorMessage).ToList());
+            
+            postInDb!.Value.PostStatus = moveToStatus;
+            await _unitOfWork.CompleteAsync();
+            return Result<PostModel>.Success(postInDb.Value);        
+    }
 }

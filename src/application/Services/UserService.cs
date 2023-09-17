@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Application.Services;
 
 public class UserService : IUserService
@@ -64,12 +66,58 @@ public class UserService : IUserService
         return Result<BlogUser>.Success(user);
     }
 
-    public async Task<Result<IEnumerable<BlogUser>>> GetAllUsersByRoleAsync(string role)
+    public ConfiguredCancelableAsyncEnumerable<BlogUser> GetAllUsersFiltered(
+                        Expression<Func<BlogUser, bool>> where,
+                        int page,
+                        int count,
+                        Expression<Func<BlogUser, string>> orderby,
+                        bool descending,
+                        bool noTracking,
+                        CancellationToken ct)
     {
-        var users = await _userManager.GetUsersInRoleAsync(role);
-        if (users?.Count() == 0 || users is null)
-            return Result<IEnumerable<BlogUser>>.Failure([$"No users in role {role}"]);
-        return Result<IEnumerable<BlogUser>>.Success(users);
+        var users = _userManager.Users.AsQueryable();
+        users = users.Where(where).Skip((page - 1) * count).Take(count);
+        if (descending) users = users.OrderByDescending(orderby);
+        else users = users.OrderBy(orderby);
+        if (noTracking) users = users.AsNoTrackingWithIdentityResolution();
+        return users.AsAsyncEnumerable().WithCancellation(ct);
+    }
+
+    public async IAsyncEnumerable<BlogUser> GetAllUsersByRole(
+                     string role,
+                     int page,
+                     int count,
+                     Expression<Func<BlogUser, string>> orderby,
+                     bool descending,
+                     bool noTracking,
+                     bool includePosts,
+                     [EnumeratorCancellation] CancellationToken ct)
+    {
+        var usersResult = GetAll(page, count, orderby, descending, noTracking, includePosts, ct);
+        await foreach (var user in usersResult.WithCancellation(ct))
+        {
+            if (ct.IsCancellationRequested) break;
+            if (await _userManager.IsInRoleAsync(user, role)) yield return user;
+        }
+    }
+
+
+    public ConfiguredCancelableAsyncEnumerable<BlogUser> GetAll(
+                      int page,
+                      int count,
+                      Expression<Func<BlogUser, string>> orderby,
+                      bool descending,
+                      bool noTracking,
+                      bool includePosts,
+                      CancellationToken ct)
+    {
+        var users = _userManager.Users.AsQueryable();
+        users = users.Skip((page - 1) * count).Take(count);
+        if (descending) users = users.OrderByDescending(orderby);
+        else users = users.OrderBy(orderby);
+        if (noTracking) users = users.AsNoTrackingWithIdentityResolution();
+        if (includePosts) users = users.Include("Posts");
+        return users.AsAsyncEnumerable().WithCancellation(ct);
     }
 
     //----------------------------------------------------------------------------------------
@@ -132,7 +180,7 @@ public class UserService : IUserService
     public async Task<Result<BlogUser>> DeleteAccountWithId(string id)
     {
         var userExistResult = await GetUserByIdAsync(id);
-        if(!userExistResult.IsSuccess) return Result<BlogUser>.Failure(userExistResult.Errors);
+        if (!userExistResult.IsSuccess) return Result<BlogUser>.Failure(userExistResult.Errors);
         var result = await _userManager.DeleteAsync(userExistResult.Value);
         if (!result.Succeeded) return Result<BlogUser>.Failure(result.Errors.Select(c => c.Description).ToList());
         return Result<BlogUser>.Success(userExistResult.Value);

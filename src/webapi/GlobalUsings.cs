@@ -20,3 +20,4 @@ global using Microsoft.IdentityModel.Tokens;
 global using System.Text.Json.Serialization;
 global using WebApi.Seeds;
 global using Domain.Enums;
+global using System.Text.Json;

@@ -1,8 +1,8 @@
 namespace WebApi.Validations;
 
-public class PostModelDTOValidation : AbstractValidator<PostModelDTO>
+public class PostModelDTOValidations : AbstractValidator<PostModelDTO>
 {
-    public PostModelDTOValidation()
+    public PostModelDTOValidations()
     {
         RuleFor(_ => _.Title).NotEmpty();
         RuleFor(_ => _.Content).NotEmpty();

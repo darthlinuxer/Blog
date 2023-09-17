@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace WebApi.Endpoints;
 
 public class PostMinimalApiEndpoints : ICarterModule
@@ -11,14 +9,74 @@ public class PostMinimalApiEndpoints : ICarterModule
         group.MapPost("/", Post).WithName(nameof(Post)).RequireAuthorization("WriterPolicy");
         group.MapPut("/", Put).WithName(nameof(Put)).RequireAuthorization("WriterPolicy");
         group.MapDelete("/{id:int}", Delete).WithName(nameof(Delete)).RequireAuthorization("WriterPolicy");
-
+        group.MapGet("/pending/{postId:int}", WriterChangeStatusToPending).WithName(nameof(WriterChangeStatusToPending)).RequireAuthorization("WriterPolicy");
+        group.MapGet("/draft/{postId:int}", WriterChangeStatusToDraft).WithName(nameof(WriterChangeStatusToDraft)).RequireAuthorization("WriterPolicy");
+        group.MapGet("/publish/{postId:int}", WriterChangeStatusToPublished).WithName(nameof(WriterChangeStatusToPublished)).RequireAuthorization("WriterPolicy");
+        group.MapGet("/approve/{postId:int}", EditorChangeStatusToApproved).WithName(nameof(EditorChangeStatusToApproved)).RequireAuthorization("EditorPolicy");
+        group.MapGet("/reject/{postId:int}", EditorChangeStatusToRejected).WithName(nameof(EditorChangeStatusToRejected)).RequireAuthorization("EditorPolicy");
     }
+
+    public static async Task<IResult> WriterChangeStatusToDraft(
+                   int postId,
+                   [FromServices] IPostService service,
+                   ClaimsPrincipal principal,
+                   CancellationToken ct)
+    {
+        var postInDb = await service.ChangePostStatus(principal, postId, PostStatus.draft, ct);
+        if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
+        return Results.Ok(postInDb.Value);
+    }
+
+    public static async Task<IResult> WriterChangeStatusToPending(
+                   int postId,
+                   [FromServices] IPostService service,
+                   ClaimsPrincipal principal,
+                   CancellationToken ct)
+    {
+        var postInDb = await service.ChangePostStatus(principal, postId, PostStatus.pending, ct);
+        if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
+        return Results.Ok(postInDb.Value);
+    }
+
+    public static async Task<IResult> WriterChangeStatusToPublished(
+                  int postId,
+                  [FromServices] IPostService service,
+                  ClaimsPrincipal principal,
+                  CancellationToken ct)
+    {
+        var postInDb = await service.ChangePostStatus(principal, postId, PostStatus.published, ct);
+        if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
+        return Results.Ok(postInDb.Value);
+    }
+
+    public static async Task<IResult> EditorChangeStatusToRejected(
+                 int postId,
+                 [FromServices] IPostService service,
+                 ClaimsPrincipal principal,
+                 CancellationToken ct)
+    {
+        var postInDb = await service.ChangePostStatus(principal, postId, PostStatus.rejected, ct);
+        if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
+        return Results.Ok(postInDb.Value);
+    }
+
+    public static async Task<IResult> EditorChangeStatusToApproved(
+                int postId,
+                [FromServices] IPostService service,
+                ClaimsPrincipal principal,
+                CancellationToken ct)
+    {
+        var postInDb = await service.ChangePostStatus(principal, postId, PostStatus.approved, ct);
+        if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
+        return Results.Ok(postInDb.Value);
+    }
+
 
     public static async Task<IResult> GetWithIdAsync([FromRoute] int id,
                                                      [FromServices] IPostService service,
                                                      CancellationToken ct)
     {
-        var postInDb = await service.GetAsync(c => c.PostId == id,
+        var postInDb = await service.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.published,
                                           ct,
                                           asNoTracking: true,
                                           ["Author", "Comments"]);

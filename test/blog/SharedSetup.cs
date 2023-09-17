@@ -30,7 +30,8 @@ public class SharedSetup
           .AddScoped<IUserService, UserService>()
           .AddScoped(implementationFactory: sp => sp.GetRequiredService<IDbContextFactory<BlogContext>>()
                                                     .CreateDbContext())
-          .AddTransient<IValidator<PostModelDTO>, PostModelDTOValidation>();
+          .AddTransient<IValidator<PostModelDTO>, PostModelDTOValidations>()
+          .AddTransient<IValidator<PostLifeCycle>, PostLifeCycleValidations>();
         services.AddIdentityCore<BlogUser>(
           options =>
           {

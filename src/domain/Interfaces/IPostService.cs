@@ -4,6 +4,8 @@ public interface IPostService
 {
     Task<Result<PostModel>> AddAsync(PostModelDTO entity);
 
+    Task<Result<PostModel>> ChangePostStatus(ClaimsPrincipal principal, int postId, PostStatus status, CancellationToken ct);
+
     ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllAsync(
         CancellationToken ct,
         string orderby = "PostId",

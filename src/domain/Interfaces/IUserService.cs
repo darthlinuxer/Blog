@@ -10,7 +10,34 @@ public interface IUserService
 
     Task<Result<BlogUser>> GetUserByNameAsync(string name);
 
-    Task<Result<IEnumerable<BlogUser>>> GetAllUsersByRoleAsync(string role);
+    ConfiguredCancelableAsyncEnumerable<BlogUser> GetAllUsersFiltered(
+                      Expression<Func<BlogUser, bool>> where,
+                      int page,
+                      int count,
+                      Expression<Func<BlogUser, string>> orderby,
+                      bool descending,
+                      bool noTracking,
+                      CancellationToken ct);
+
+    ConfiguredCancelableAsyncEnumerable<BlogUser> GetAll(
+                      int page,
+                      int count,
+                      Expression<Func<BlogUser, string>> orderby,
+                      bool descending,
+                      bool noTracking,
+                      bool includePosts,
+                      CancellationToken ct);
+
+    IAsyncEnumerable<BlogUser> GetAllUsersByRole(
+                     string role,
+                     int page,
+                     int count,
+                     Expression<Func<BlogUser, string>> orderby,
+                     bool descending,
+                     bool noTracking,
+                     bool includePosts,
+                     CancellationToken ct);
+
 
     Task<Result<string>> LoginAsync(string username, string password);
 

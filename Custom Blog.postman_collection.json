@@ -1,0 +1,1707 @@
+{
+	"info": {
+		"_postman_id": "65863a31-6822-4f0a-9e60-0c2449ab2034",
+		"name": "Custom Blog",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "846586"
+	},
+	"item": [
+		{
+			"name": "Credentials",
+			"item": [
+				{
+					"name": "Public",
+					"item": [
+						{
+							"name": "login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);\r",
+											"pm.environment.set(\"idtoken\", jsonData.token);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"login\":\"korbendallas\",\r\n    \"password\":\"ChangeMe1$\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/credentials/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"credentials",
+										"login"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Writer DarthLinuxer",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"login\":\"darthlinuxer\",\r\n    \"password\":\"ChangeMe1$\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5094/api/credentials/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5094",
+											"path": [
+												"api",
+												"credentials",
+												"login"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								},
+								{
+									"name": "Public Luke",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"login\":\"luke\",\r\n    \"password\":\"ChangeMe1$\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5094/api/credentials/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5094",
+											"path": [
+												"api",
+												"credentials",
+												"login"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								},
+								{
+									"name": "Editor Admin",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"login\":\"admin\",\r\n    \"password\":\"ChangeMe1$\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5094/api/credentials/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5094",
+											"path": [
+												"api",
+												"credentials",
+												"login"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								},
+								{
+									"name": "Public KorbenDallas",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"login\":\"korbendallas\",\r\n    \"password\":\"ChangeMe1$\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5094/api/credentials/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5094",
+											"path": [
+												"api",
+												"credentials",
+												"login"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								}
+							]
+						},
+						{
+							"name": "Who is the Logged User With a Bearer Token ?",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5094/api/credentials/loggeduser",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"credentials",
+										"loggeduser"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "register",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);\r",
+											"pm.environment.set(\"idToDelete\", jsonData.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\":\"korbenDallas\",\r\n    \"password\":\"ChangeMe1$\",\r\n    \"email\":\"korben@test.com\",\r\n    \"role\":\"Public\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/credentials/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"credentials",
+										"register"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Register KorbenDallas as Public",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"username\":\"korbenDallas\",\r\n    \"password\":\"ChangeMe1$\",\r\n    \"email\":\"korben@test.com\",\r\n    \"role\":\"Public\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5094/api/credentials/register",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5094",
+											"path": [
+												"api",
+												"credentials",
+												"register"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Authorized",
+					"item": [
+						{
+							"name": "deleteself",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5094/api/credentials/deleteself",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"credentials",
+										"deleteself"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete user (Only Editor can)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5094/api/credentials/delete/{{idToDelete}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"credentials",
+										"delete",
+										"{{idToDelete}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Users (Only Editor can)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\": 1,\r\n    \"count\": 10,\r\n    \"orderBy\": \"UserName\",\r\n    \"descending\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/credentials/getall?includePosts=false",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"credentials",
+										"getall"
+									],
+									"query": [
+										{
+											"key": "includePosts",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User by Id(Only Editor can)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5094/api/credentials/getbyid/6f0244a0-8198-4401-9ca7-98d1c1791796",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"credentials",
+										"getbyid",
+										"6f0244a0-8198-4401-9ca7-98d1c1791796"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User by Name(Only Editor can)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5094/api/credentials/getbyname/darthlinuxer",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"credentials",
+										"getbyname",
+										"darthlinuxer"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get By Email(Only Editor can)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5094/api/credentials/getbyemail/darthlinuxer@blog.com",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"credentials",
+										"getbyemail",
+										"darthlinuxer@blog.com"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetAll In Role (Only Editor can)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\": 1,\r\n    \"count\": 10,\r\n    \"orderBy\": \"UserName\",\r\n    \"descending\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/credentials/getallinrole?role=Writer&includePosts=false",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"credentials",
+										"getallinrole"
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "Writer"
+										},
+										{
+											"key": "includePosts",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Writer",
+					"item": [
+						{
+							"name": "Move My Post to Pending",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/pending/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"pending",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Move My Post to Draft",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/draft/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"draft",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Move My Post to Published",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/publish/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"publish",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all my Pending Posts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/getmypendingposts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"getmypendingposts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all my Rejected Posts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/getmyrejectedposts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"getmyrejectedposts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all my Draft Posts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/getmydraftposts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"getmydraftposts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all my Published Posts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/getmypublishedposts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"getmypublishedposts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all my Approved Posts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/getmyapprovedposts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"getmyapprovedposts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Posts owned by me",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\": \"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/getallmyposts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"getallmyposts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Post (Only a Writer can Post)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\":\"test title\",\r\n    \"content\":\"test content\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Editor",
+					"item": [
+						{
+							"name": "Editor GetAll Pending Approval Posts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"where\": \"PostStatus == \\\"pending\\\"\",\r\n    \"page\": 1,\r\n    \"count\": 10,\r\n    \"orderBy\": \"Title\",\r\n    \"descending\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/editorgetallpostsfiltered",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"editorgetallpostsfiltered"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Editor GetAll Posts Filtered",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"where\": \"@Title.Contains(\\\"title\\\")\",\r\n    \"page\": 1,\r\n    \"count\": 10,\r\n    \"orderBy\": \"Title\",\r\n    \"descending\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/editorgetallpostsfiltered",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"editorgetallpostsfiltered"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "PostId>0",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"where\": \"PostId>0\",\r\n    \"page\": 1,\r\n    \"count\": 10,\r\n    \"orderBy\": \"Title\",\r\n    \"descending\": true\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5094/api/posts/editorgetallpostsfiltered",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5094",
+											"path": [
+												"api",
+												"posts",
+												"editorgetallpostsfiltered"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								},
+								{
+									"name": "Title.Contains(text)",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"where\": \"@Title.Contains(\\\"test\\\")\",\r\n    \"page\": 1,\r\n    \"count\": 10,\r\n    \"orderBy\": \"Title\",\r\n    \"descending\": true\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5094/api/posts/editorgetallpostsfiltered",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5094",
+											"path": [
+												"api",
+												"posts",
+												"editorgetallpostsfiltered"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								},
+								{
+									"name": "Date in Range",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"where\": \"datePublished >= DateTime.Parse(\\\"2023-09-15T17:00:09\\\") && datePublished <= DateTime.Parse(\\\"2023-09-16\\\")\",\r\n    \"page\": 1,\r\n    \"count\": 10,\r\n    \"orderBy\": \"Title\",\r\n    \"descending\": true\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5094/api/posts/editorgetallpostsfiltered",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5094",
+											"path": [
+												"api",
+												"posts",
+												"editorgetallpostsfiltered"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								},
+								{
+									"name": "Inner navigation property",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"where\": \"@Title.Contains(\\\"title\\\")\",\r\n    \"page\": 1,\r\n    \"count\": 10,\r\n    \"orderBy\": \"Title\",\r\n    \"descending\": true\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:5094/api/posts/editorgetallpostsfiltered",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "5094",
+											"path": [
+												"api",
+												"posts",
+												"editorgetallpostsfiltered"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								}
+							]
+						},
+						{
+							"name": "Editor GetAll Posts By Author and Status",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/editorgetallpostsbyauthorandstatus?author=darthlinuxer&status=draft",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"editorgetallpostsbyauthorandstatus"
+									],
+									"query": [
+										{
+											"key": "author",
+											"value": "darthlinuxer"
+										},
+										{
+											"key": "status",
+											"value": "draft"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Editor Move Post to Approved",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/approve/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"approve",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Editor Move Post to Reject",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/reject/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"reject",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Public",
+					"item": [
+						{
+							"name": "Get Published Post with Id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5094/api/posts/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Published Posts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/getallpublishedposts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"getallpublishedposts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Published Posts By Author",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/getallpostsbyauthor?author=darthlinuxer",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"getallpostsbyauthor"
+									],
+									"query": [
+										{
+											"key": "author",
+											"value": "darthlinuxer"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Published Posts By Title",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/getallpostsbytitle?title=test",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"getallpostsbytitle"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "test"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Published Posts By Content",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{idtoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\":1,\r\n    \"count\":10,\r\n    \"orderBy\":\"Title\",\r\n    \"descending\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5094/api/posts/getallpostsbycontent?content=test",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5094",
+									"path": [
+										"api",
+										"posts",
+										"getallpostsbycontent"
+									],
+									"query": [
+										{
+											"key": "content",
+											"value": "test"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
