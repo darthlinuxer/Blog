@@ -6,10 +6,10 @@ public class PostModelDTO
 	public required string Title { get; set; }
 	public required string Content { get; set; }
 	public DateTime? DatePublished { get; set; }
-	public string? AuthorId {get; set;}
+	public string? AuthorId { get; set; }
 
 	[JsonIgnore]
-	public PostStatus PostStatus {get; set;} = PostStatus.draft;
+	public Status PostStatus { get; set; } = Status.draft;
 
 	public static implicit operator PostModel(PostModelDTO dto)
 	{

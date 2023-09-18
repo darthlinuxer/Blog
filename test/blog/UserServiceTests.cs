@@ -145,7 +145,7 @@ public class UserServiceTests
                                                      false,
                                                      CancellationToken.None);
 
-        List<BlogUser> writers = new();
+        List<BaseUser> writers = new();
         await foreach (var writer in writersAsync)
         {
             writers.Add(writer);

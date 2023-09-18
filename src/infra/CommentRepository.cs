@@ -5,7 +5,7 @@ public class CommentRepository : GenericRepository<Comment>, ICommentRepository
   {
   }
 
-  public ConfiguredCancelableAsyncEnumerable<Comment>? GetAllCommentsForPostAsync(
+  public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsForPostAsync(
       int postId,
       int page,
       int count,
@@ -25,7 +25,7 @@ public class CommentRepository : GenericRepository<Comment>, ICommentRepository
 
   }
 
-  public ConfiguredCancelableAsyncEnumerable<Comment>? GetAllCommentsOfUserAsync(
+  public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsOfUserAsync(
       string username,
       int page,
       int count,
@@ -34,13 +34,13 @@ public class CommentRepository : GenericRepository<Comment>, ICommentRepository
       string[]? navigation,
       CancellationToken ct)
   {
-    return GetAllAsync(where: $"Post.Username={username}",
+    return GetAllAsync(where: $"@Post.Author.UserName=\"{username}\"",
                        orderby: "datetime",
                        page: page,
                        count: count,
                        descending: descending,
                        asNoTracking: asNoTracking,
-                       includeNavigationNames: navigation,
+                       includeNavigationNames: ["Author"],
                        ct: ct);
 
   }

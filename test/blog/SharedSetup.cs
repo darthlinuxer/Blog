@@ -32,7 +32,7 @@ public class SharedSetup
                                                     .CreateDbContext())
           .AddTransient<IValidator<PostModelDTO>, PostModelDTOValidations>()
           .AddTransient<IValidator<PostLifeCycle>, PostLifeCycleValidations>();
-        services.AddIdentityCore<BlogUser>(
+        services.AddIdentityCore<BaseUser>(
           options =>
           {
               options.SignIn.RequireConfirmedAccount = false;
@@ -47,8 +47,8 @@ public class SharedSetup
           })
               .AddRoles<IdentityRole>()
               .AddEntityFrameworkStores<BlogContext>()
-              .AddUserManager<UserManager<BlogUser>>()
-              .AddSignInManager<SignInManager<BlogUser>>()
+              .AddUserManager<UserManager<BaseUser>>()
+              .AddSignInManager<SignInManager<BaseUser>>()
               .AddRoleManager<RoleManager<IdentityRole>>();
 
         services.AddAuthentication(options =>

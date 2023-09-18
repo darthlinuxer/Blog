@@ -1,10 +1,22 @@
+
 namespace Domain.Models;
 
-public class Comment
+//A Comment is an Article associated with a Post.
+//Comments can have other Comments
+public class Comment: Article
 {
-    public int CommentId { get; set; }
-    public string Text { get; set; }
-    DateTime DateTime { get; set; } = DateTime.Now;
+    public Comment(int postId, string baseUserId, string title, string content, DateTime? datePublished = null) : base(title, content, datePublished)
+    {
+        this.PostId = postId;
+        this.BaseUserId = baseUserId;
+    }
+
     public int PostId { get; set; }
-    public PostModel Post { get; set; }
+    public string BaseUserId {get; set;}
+
+    //Navigation Properties
+    public BaseUser? BaseUser {get; set;}
+    public PostModel? Post { get; set; }
+    public ICollection<Comment>? Comments {get; set;}
+
 }

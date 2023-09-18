@@ -36,7 +36,7 @@ public class PostService : IPostService
         bool descending = true,
         string[]? includeNavigationNames = null,
         bool asNoTracking = true,
-        PostStatus postStatus = PostStatus.published)
+        Status postStatus = Status.published)
     {
         return _unitOfWork.Posts.GetAllAsync(ct: ct,
                                              orderBy: orderby,
@@ -68,7 +68,7 @@ public class PostService : IPostService
         int count = 10,
         bool descending = true,
         bool asNoTracking = true,
-        PostStatus postStatus = PostStatus.published)
+        Status postStatus = Status.published)
     {
         return _unitOfWork.Posts.GetAllByAuthorNameAsync(authorname,
                                                          ct,
@@ -89,7 +89,7 @@ public class PostService : IPostService
       bool descending = true,
       bool asNoTracking = true,
       string[]? navigation = null,
-      PostStatus postStatus = PostStatus.published)
+      Status postStatus = Status.published)
     {
         return _unitOfWork.Posts.GetAllByAuthorIdAsync(authorId,
                                                        ct,
@@ -111,7 +111,7 @@ public class PostService : IPostService
         bool descending = true,
         bool asNoTracking = true,
         string[]? navigation = null,
-        PostStatus postStatus = PostStatus.published)
+        Status postStatus = Status.published)
     {
         return _unitOfWork.Posts.GetAllByTitleAsync(title,
                                                     ct,
@@ -133,7 +133,7 @@ public class PostService : IPostService
         bool descending = true,
         bool asNoTracking = true,
         string[]? navigation = null,
-        PostStatus postStatus = PostStatus.published)
+        Status postStatus = Status.published)
     {
         return _unitOfWork.Posts.GetAllByContentsAsync(content,
                                                        ct,
@@ -209,29 +209,30 @@ public class PostService : IPostService
         return _unitOfWork.Posts.Count(p);
     }
 
-    public async Task<Result<PostModel>> ChangePostStatus(ClaimsPrincipal principal, int postId, PostStatus moveToStatus, CancellationToken ct)
+    public async Task<Result<PostModel>> ChangePostStatus(ClaimsPrincipal principal, int postId, Status moveToStatus, CancellationToken ct)
     {
-          var postInDb = await GetAsync(p: p => p.PostId == postId,
-                                          ct: ct,
-                                          asNoTracking: false,
-                                          includeNavigationNames: null);
-            if (!postInDb.IsSuccess) return Result<PostModel>.Failure(postInDb.Errors);
+        var postInDb = await GetAsync(p: p => p.PostId == postId,
+                                        ct: ct,
+                                        asNoTracking: false,
+                                        includeNavigationNames: null);
+        if (!postInDb.IsSuccess) return Result<PostModel>.Failure(postInDb.Errors);
 
-            var authorId = principal.Claims.SingleOrDefault(c=>c.Type == ClaimTypes.Sid)!.Value;
-            var role = principal.Claims.SingleOrDefault(c=>c.Type == ClaimTypes.Role)!.Value;
+        var authorId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
+        var role = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Role)!.Value;
 
-            var result = _lifecycleValidator.Validate(new PostLifeCycle(){
-                PostId = postInDb.Value.PostId,
-                AuthorIdRequestingChange = authorId,
-                Status = postInDb.Value.PostStatus,
-                MoveToStatus = moveToStatus,                
-                Role = role              
-            });
+        var result = _lifecycleValidator.Validate(new PostLifeCycle()
+        {
+            PostId = postInDb.Value.PostId,
+            AuthorIdRequestingChange = authorId,
+            Status = postInDb.Value.PostStatus,
+            MoveToStatus = moveToStatus,
+            Role = role
+        });
 
-            if(!result.IsValid) return Result<PostModel>.Failure(result.Errors.Select(c=>c.ErrorMessage).ToList());
-            
-            postInDb!.Value.PostStatus = moveToStatus;
-            await _unitOfWork.CompleteAsync();
-            return Result<PostModel>.Success(postInDb.Value);        
+        if (!result.IsValid) return Result<PostModel>.Failure(result.Errors.Select(c => c.ErrorMessage).ToList());
+
+        postInDb!.Value.PostStatus = moveToStatus;
+        await _unitOfWork.CompleteAsync();
+        return Result<PostModel>.Success(postInDb.Value);
     }
 }

@@ -2,7 +2,7 @@ namespace Domain.Interfaces;
 
 public interface ICommentService
 {
-    ConfiguredCancelableAsyncEnumerable<Comment>? GetAllCommentsForPostAsync(
+    ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsForPostAsync(
        int postId,
        int page,
        int count,
@@ -11,7 +11,7 @@ public interface ICommentService
        string[]? navigation,
        CancellationToken ct);
 
-    ConfiguredCancelableAsyncEnumerable<Comment>? GetAllCommentsOfUserAsync(
+    ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsOfUserAsync(
         string username,
         int page,
         int count,

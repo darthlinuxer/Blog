@@ -1,6 +1,6 @@
 namespace Domain.Enums;
 
-public enum PostStatus
+public enum Status
 {
     draft,
     pending,

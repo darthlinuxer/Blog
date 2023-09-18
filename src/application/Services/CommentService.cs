@@ -1,10 +1,7 @@
 
-using System.Drawing;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-
 namespace Application.Services;
 
-public class CommentService: ICommentService
+public class CommentService : ICommentService
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -13,20 +10,20 @@ public class CommentService: ICommentService
         this._unitOfWork = unitOfWork;
     }
 
-     public async Task<Result<Comment>> AddAsync(Comment entity)
+    public async Task<Result<Comment>> AddAsync(Comment entity)
     {
         var addedComment = await _unitOfWork.Comments.AddAsync(entity);
-        if(addedComment is null) return Result<Comment>.Failure(["Comment not added"]);
+        if (addedComment is null) return Result<Comment>.Failure(["Comment not added"]);
         return Result<Comment>.Success(addedComment);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<Comment>? GetAllAsync(string where,
+    public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllAsync(string where,
                                                                      string orderby,
                                                                      int page,
                                                                      int count,
                                                                      bool descending,
                                                                      string[]? includeNavigationNames,
-                                                                     bool asNoTracking, 
+                                                                     bool asNoTracking,
                                                                      CancellationToken ct)
     {
         return _unitOfWork.Comments.GetAllAsync(where,
@@ -39,7 +36,7 @@ public class CommentService: ICommentService
                                                 ct);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<Comment>? GetAllCommentsForPostAsync(int postId,
+    public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsForPostAsync(int postId,
                                                                                     int page,
                                                                                     int count,
                                                                                     bool descending,
@@ -56,7 +53,7 @@ public class CommentService: ICommentService
                                                                ct);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<Comment>? GetAllCommentsOfUserAsync(string username,
+    public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsOfUserAsync(string username,
                                                                                    int page,
                                                                                    int count,
                                                                                    bool descending,
@@ -79,21 +76,21 @@ public class CommentService: ICommentService
                                    string[]? includeNavigationNames)
     {
         var comment = await _unitOfWork.Comments.GetAsync(p, ct, asNoTracking, includeNavigationNames);
-        if(comment is null) return Result<Comment>.Failure([""]);
+        if (comment is null) return Result<Comment>.Failure([""]);
         return Result<Comment>.Success(comment);
     }
 
     public Result<Comment> Remove(Comment entity)
     {
         var comment = _unitOfWork.Comments.Remove(entity);
-        if(comment is null) return Result<Comment>.Failure(["Comment not found!"]);
+        if (comment is null) return Result<Comment>.Failure(["Comment not found!"]);
         return Result<Comment>.Success(comment);
     }
 
     public Result<Comment> Update(Comment entity)
     {
         var comment = _unitOfWork.Comments.Update(entity);
-         if(comment is null) return Result<Comment>.Failure(["Comment not found!"]);
+        if (comment is null) return Result<Comment>.Failure(["Comment not found!"]);
         return Result<Comment>.Success(comment);
     }
 

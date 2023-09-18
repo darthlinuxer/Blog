@@ -4,13 +4,13 @@ namespace Application.Services;
 
 public class UserService : IUserService
 {
-    private readonly UserManager<BlogUser> _userManager;
-    private readonly SignInManager<BlogUser> _signInManager;
+    private readonly UserManager<BaseUser> _userManager;
+    private readonly SignInManager<BaseUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
     public UserService(
-        UserManager<BlogUser> userManager,
-        SignInManager<BlogUser> signInManager,
+        UserManager<BaseUser> userManager,
+        SignInManager<BaseUser> signInManager,
         RoleManager<IdentityRole> roleManager
         )
     {
@@ -19,16 +19,16 @@ public class UserService : IUserService
         _roleManager = roleManager;
     }
 
-    public async Task<Result<BlogUser>> RegisterAsync(UserRecordDTO input)
+    public async Task<Result<BaseUser>> RegisterAsync(UserRecordDTO input)
     {
         var roleInDb = await _roleManager.RoleExistsAsync(input.role);
         if (roleInDb is false)
-            return Result<BlogUser>.Failure([$"Role {input.role} is invalid!"]);
+            return Result<BaseUser>.Failure([$"Role {input.role} is invalid!"]);
 
         var blogUser = await _userManager.FindByNameAsync(input.username);
-        if (blogUser is not null) return Result<BlogUser>.Failure(["User already exists"]);
+        if (blogUser is not null) return Result<BaseUser>.Failure(["User already exists"]);
 
-        blogUser = new BlogUser
+        blogUser = new Author
         {
             UserName = input.username,
             PasswordHash = "My Internal Secret Password Hash",
@@ -37,40 +37,40 @@ public class UserService : IUserService
 
         var result = await _userManager.CreateAsync(blogUser, input.password);
         if (!result.Succeeded)
-            return Result<BlogUser>.Failure(
+            return Result<BaseUser>.Failure(
                 result.Errors.Select(e => e.Description).ToList<string>());
 
         var roleAddResult = await _userManager.AddToRoleAsync(blogUser, input.role);
-        if (!roleAddResult.Succeeded) return Result<BlogUser>.Failure(roleAddResult.Errors.Select(c => c.Description).ToList());
-        return Result<BlogUser>.Success(blogUser);
+        if (!roleAddResult.Succeeded) return Result<BaseUser>.Failure(roleAddResult.Errors.Select(c => c.Description).ToList());
+        return Result<BaseUser>.Success(blogUser);
     }
 
-    public async Task<Result<BlogUser>> GetUserByIdAsync(string id)
+    public async Task<Result<BaseUser>> GetUserByIdAsync(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
-        if (user is null) return Result<BlogUser>.Failure(["Not found"]);
-        return Result<BlogUser>.Success(user);
+        if (user is null) return Result<BaseUser>.Failure(["Not found"]);
+        return Result<BaseUser>.Success(user);
     }
 
-    public async Task<Result<BlogUser>> GetUserByEmailAsync(string email)
+    public async Task<Result<BaseUser>> GetUserByEmailAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user is null) return Result<BlogUser>.Failure(["Not found"]);
-        return Result<BlogUser>.Success(user);
+        if (user is null) return Result<BaseUser>.Failure(["Not found"]);
+        return Result<BaseUser>.Success(user);
     }
 
-    public async Task<Result<BlogUser>> GetUserByNameAsync(string name)
+    public async Task<Result<BaseUser>> GetUserByNameAsync(string name)
     {
         var user = await _userManager.FindByNameAsync(name);
-        if (user is null) return Result<BlogUser>.Failure(["Not found"]);
-        return Result<BlogUser>.Success(user);
+        if (user is null) return Result<BaseUser>.Failure(["Not found"]);
+        return Result<BaseUser>.Success(user);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<BlogUser> GetAllUsersFiltered(
-                        Expression<Func<BlogUser, bool>> where,
+    public ConfiguredCancelableAsyncEnumerable<BaseUser> GetAllUsersFiltered(
+                        Expression<Func<BaseUser, bool>> where,
                         int page,
                         int count,
-                        Expression<Func<BlogUser, string>> orderby,
+                        Expression<Func<BaseUser, string>> orderby,
                         bool descending,
                         bool noTracking,
                         CancellationToken ct)
@@ -83,11 +83,11 @@ public class UserService : IUserService
         return users.AsAsyncEnumerable().WithCancellation(ct);
     }
 
-    public async IAsyncEnumerable<BlogUser> GetAllUsersByRole(
+    public async IAsyncEnumerable<BaseUser> GetAllUsersByRole(
                      string role,
                      int page,
                      int count,
-                     Expression<Func<BlogUser, string>> orderby,
+                     Expression<Func<BaseUser, string>> orderby,
                      bool descending,
                      bool noTracking,
                      bool includePosts,
@@ -102,10 +102,10 @@ public class UserService : IUserService
     }
 
 
-    public ConfiguredCancelableAsyncEnumerable<BlogUser> GetAll(
+    public ConfiguredCancelableAsyncEnumerable<BaseUser> GetAll(
                       int page,
                       int count,
-                      Expression<Func<BlogUser, string>> orderby,
+                      Expression<Func<BaseUser, string>> orderby,
                       bool descending,
                       bool noTracking,
                       bool includePosts,
@@ -150,7 +150,7 @@ public class UserService : IUserService
         return Result<bool>.Success(isInRole);
     }
 
-    public async Task<Result<bool>> ChangePasswordAsync(BlogUser user, string oldPassword, string newPassword)
+    public async Task<Result<bool>> ChangePasswordAsync(BaseUser user, string oldPassword, string newPassword)
     {
         var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
         if (!result.Succeeded) return Result<bool>.Failure(result.Errors.Select(x => x.Description).ToList());
@@ -177,13 +177,13 @@ public class UserService : IUserService
     }
 
     //---------------------------------------------------------------------------
-    public async Task<Result<BlogUser>> DeleteAccountWithId(string id)
+    public async Task<Result<BaseUser>> DeleteAccountWithId(string id)
     {
         var userExistResult = await GetUserByIdAsync(id);
-        if (!userExistResult.IsSuccess) return Result<BlogUser>.Failure(userExistResult.Errors);
+        if (!userExistResult.IsSuccess) return Result<BaseUser>.Failure(userExistResult.Errors);
         var result = await _userManager.DeleteAsync(userExistResult.Value);
-        if (!result.Succeeded) return Result<BlogUser>.Failure(result.Errors.Select(c => c.Description).ToList());
-        return Result<BlogUser>.Success(userExistResult.Value);
+        if (!result.Succeeded) return Result<BaseUser>.Failure(result.Errors.Select(c => c.Description).ToList());
+        return Result<BaseUser>.Success(userExistResult.Value);
     }
 
     //---------------------------------------------------------------------------

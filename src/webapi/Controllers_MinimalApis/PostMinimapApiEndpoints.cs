@@ -22,7 +22,7 @@ public class PostMinimalApiEndpoints : ICarterModule
                    ClaimsPrincipal principal,
                    CancellationToken ct)
     {
-        var postInDb = await service.ChangePostStatus(principal, postId, PostStatus.draft, ct);
+        var postInDb = await service.ChangePostStatus(principal, postId, Status.draft, ct);
         if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
         return Results.Ok(postInDb.Value);
     }
@@ -33,7 +33,7 @@ public class PostMinimalApiEndpoints : ICarterModule
                    ClaimsPrincipal principal,
                    CancellationToken ct)
     {
-        var postInDb = await service.ChangePostStatus(principal, postId, PostStatus.pending, ct);
+        var postInDb = await service.ChangePostStatus(principal, postId, Status.pending, ct);
         if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
         return Results.Ok(postInDb.Value);
     }
@@ -44,7 +44,7 @@ public class PostMinimalApiEndpoints : ICarterModule
                   ClaimsPrincipal principal,
                   CancellationToken ct)
     {
-        var postInDb = await service.ChangePostStatus(principal, postId, PostStatus.published, ct);
+        var postInDb = await service.ChangePostStatus(principal, postId, Status.published, ct);
         if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
         return Results.Ok(postInDb.Value);
     }
@@ -55,7 +55,7 @@ public class PostMinimalApiEndpoints : ICarterModule
                  ClaimsPrincipal principal,
                  CancellationToken ct)
     {
-        var postInDb = await service.ChangePostStatus(principal, postId, PostStatus.rejected, ct);
+        var postInDb = await service.ChangePostStatus(principal, postId, Status.rejected, ct);
         if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
         return Results.Ok(postInDb.Value);
     }
@@ -66,7 +66,7 @@ public class PostMinimalApiEndpoints : ICarterModule
                 ClaimsPrincipal principal,
                 CancellationToken ct)
     {
-        var postInDb = await service.ChangePostStatus(principal, postId, PostStatus.approved, ct);
+        var postInDb = await service.ChangePostStatus(principal, postId, Status.approved, ct);
         if (!postInDb.IsSuccess) return Results.BadRequest(postInDb.Errors);
         return Results.Ok(postInDb.Value);
     }
@@ -76,7 +76,7 @@ public class PostMinimalApiEndpoints : ICarterModule
                                                      [FromServices] IPostService service,
                                                      CancellationToken ct)
     {
-        var postInDb = await service.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.published,
+        var postInDb = await service.GetAsync(c => c.PostId == id && c.PostStatus == Status.published,
                                           ct,
                                           asNoTracking: true,
                                           ["Author", "Comments"]);

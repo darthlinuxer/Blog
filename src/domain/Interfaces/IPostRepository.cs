@@ -10,19 +10,19 @@ public interface IPostRepository : IGenericRepository<PostModel>
        bool descending = true,
        bool asNoTracking = true,
        string[]? navigation = null,
-       PostStatus postStatus = PostStatus.published
+       Status postStatus = Status.published
        );
 
-     ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllFilteredAsync(
-       string where,
-       CancellationToken ct,
-       string orderBy = "Title",
-       int page = 1,
-       int count = 10,
-       bool descending = true,
-       bool asNoTracking = true,
-       string[]? navigation = null
-       );
+    ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllFilteredAsync(
+      string where,
+      CancellationToken ct,
+      string orderBy = "Title",
+      int page = 1,
+      int count = 10,
+      bool descending = true,
+      bool asNoTracking = true,
+      string[]? navigation = null
+      );
 
     ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorNameAsync(
         string author,
@@ -32,7 +32,7 @@ public interface IPostRepository : IGenericRepository<PostModel>
         int count = 10,
         bool descending = true,
         bool asNoTracking = true,
-        PostStatus postStatus = PostStatus.published
+        Status postStatus = Status.published
         );
 
     ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorIdAsync(
@@ -44,7 +44,7 @@ public interface IPostRepository : IGenericRepository<PostModel>
        bool descending = true,
        bool asNoTracking = true,
        string[]? navigation = null,
-       PostStatus postStatus = PostStatus.published
+       Status postStatus = Status.published
        );
 
     ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByTitleAsync(
@@ -56,7 +56,7 @@ public interface IPostRepository : IGenericRepository<PostModel>
         bool descending = true,
         bool asNoTracking = true,
         string[]? navigation = null,
-        PostStatus postStatus = PostStatus.published
+        Status postStatus = Status.published
         );
 
     ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByContentsAsync(
@@ -68,7 +68,7 @@ public interface IPostRepository : IGenericRepository<PostModel>
         bool descending = true,
         bool asNoTracking = true,
         string[]? navigation = null,
-        PostStatus postStatus = PostStatus.published
+        Status postStatus = Status.published
         );
 
 }

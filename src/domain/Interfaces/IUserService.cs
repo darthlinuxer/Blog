@@ -2,37 +2,37 @@ namespace Domain.Interfaces;
 
 public interface IUserService
 {
-    Task<Result<BlogUser>> RegisterAsync(UserRecordDTO input);
+    Task<Result<BaseUser>> RegisterAsync(UserRecordDTO input);
 
-    Task<Result<BlogUser>> GetUserByIdAsync(string id);
+    Task<Result<BaseUser>> GetUserByIdAsync(string id);
 
-    Task<Result<BlogUser>> GetUserByEmailAsync(string email);
+    Task<Result<BaseUser>> GetUserByEmailAsync(string email);
 
-    Task<Result<BlogUser>> GetUserByNameAsync(string name);
+    Task<Result<BaseUser>> GetUserByNameAsync(string name);
 
-    ConfiguredCancelableAsyncEnumerable<BlogUser> GetAllUsersFiltered(
-                      Expression<Func<BlogUser, bool>> where,
+    ConfiguredCancelableAsyncEnumerable<BaseUser> GetAllUsersFiltered(
+                      Expression<Func<BaseUser, bool>> where,
                       int page,
                       int count,
-                      Expression<Func<BlogUser, string>> orderby,
+                      Expression<Func<BaseUser, string>> orderby,
                       bool descending,
                       bool noTracking,
                       CancellationToken ct);
 
-    ConfiguredCancelableAsyncEnumerable<BlogUser> GetAll(
+    ConfiguredCancelableAsyncEnumerable<BaseUser> GetAll(
                       int page,
                       int count,
-                      Expression<Func<BlogUser, string>> orderby,
+                      Expression<Func<BaseUser, string>> orderby,
                       bool descending,
                       bool noTracking,
                       bool includePosts,
                       CancellationToken ct);
 
-    IAsyncEnumerable<BlogUser> GetAllUsersByRole(
+    IAsyncEnumerable<BaseUser> GetAllUsersByRole(
                      string role,
                      int page,
                      int count,
-                     Expression<Func<BlogUser, string>> orderby,
+                     Expression<Func<BaseUser, string>> orderby,
                      bool descending,
                      bool noTracking,
                      bool includePosts,
@@ -41,9 +41,9 @@ public interface IUserService
 
     Task<Result<string>> LoginAsync(string username, string password);
 
-    Task<Result<BlogUser>> DeleteAccountWithId(string id);
+    Task<Result<BaseUser>> DeleteAccountWithId(string id);
 
-    Task<Result<bool>> ChangePasswordAsync(BlogUser user, string oldPassword, string newPassword);
+    Task<Result<bool>> ChangePasswordAsync(BaseUser user, string oldPassword, string newPassword);
 
     Task<Result<string>> ForgotPasswordAsync(string email);
 

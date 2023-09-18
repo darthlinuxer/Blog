@@ -15,7 +15,7 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
        bool descending = true,
        bool asNoTracking = true,
        string[]? navigation = null,
-       PostStatus postStatus = PostStatus.published)
+       Status postStatus = Status.published)
     {
         return GetAllAsync(where: $"PostId > 0 && PostStatus == \"{postStatus}\"",
                            orderby: orderBy,
@@ -55,7 +55,7 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         bool descending = true,
         bool asNoTracking = true,
         string[]? navigation = null,
-        PostStatus postStatus = PostStatus.published)
+        Status postStatus = Status.published)
     {
         return GetAllAsync(
             where: $"AuthorId == \"{authorId}\" && PostStatus == \"{postStatus}\"",
@@ -76,7 +76,7 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         int count = 10,
         bool descending = true,
         bool asNoTracking = true,
-        PostStatus postStatus = PostStatus.published)
+        Status postStatus = Status.published)
     {
         return GetAllAsync(
             where: $"@Author.Username == \"{author}\" && PostStatus == \"{postStatus}\"",
@@ -98,7 +98,7 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         bool descending = true,
         bool asNoTracking = true,
         string[]? navigation = null,
-        PostStatus postStatus = PostStatus.published)
+        Status postStatus = Status.published)
     {
         return GetAllAsync(
             where: $"@Content.Contains(\"{content}\") && PostStatus == \"{postStatus}\"",
@@ -120,7 +120,7 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         bool descending = true,
         bool asNoTracking = true,
         string[]? navigation = null,
-        PostStatus postStatus = PostStatus.published)
+        Status postStatus = Status.published)
     {
         return GetAllAsync(
             where: $"@Title.Contains(\"{title}\") && PostStatus == \"{postStatus}\"",

@@ -1,5 +1,5 @@
 ﻿namespace Infra;
-public class BlogContext : IdentityDbContext<BlogUser>
+public class BlogContext : IdentityDbContext<BaseUser>
 {
     public BlogContext(DbContextOptions<BlogContext> options) : base(options)
     {

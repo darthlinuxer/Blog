@@ -2,7 +2,7 @@ namespace Domain.Interfaces;
 
 public interface ICommentRepository : IGenericRepository<Comment>
 {
-    public ConfiguredCancelableAsyncEnumerable<Comment>? GetAllCommentsForPostAsync(
+    public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsForPostAsync(
         int postId,
         int page,
         int count,
@@ -11,7 +11,7 @@ public interface ICommentRepository : IGenericRepository<Comment>
         string[]? navigation,
         CancellationToken ct);
 
-    public ConfiguredCancelableAsyncEnumerable<Comment>? GetAllCommentsOfUserAsync(
+    public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsOfUserAsync(
         string username,
         int page,
         int count,

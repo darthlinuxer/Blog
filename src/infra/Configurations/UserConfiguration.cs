@@ -1,8 +1,8 @@
 namespace Infra.Configurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<BlogUser>
+public class UserConfiguration : IEntityTypeConfiguration<BaseUser>
 {
-    public void Configure(EntityTypeBuilder<BlogUser> builder)
+    public void Configure(EntityTypeBuilder<BaseUser> builder)
     {
 
         builder.HasMany(u => u.Posts)

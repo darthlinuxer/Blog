@@ -21,50 +21,50 @@ public class CredentialEndpoints : ICarterModule
         group.MapDelete("/delete/{userId}", DeleteWithId).WithName(nameof(DeleteWithId)).RequireAuthorization("EditorPolicy");
     }
 
-    public static async Task<Result<BlogUser>> GetById(
+    public static async Task<Result<BaseUser>> GetById(
         string userId,
         [FromServices] IUserService service)
     {
         var result = await service.GetUserByIdAsync(userId);
-        if (!result.IsSuccess) return Result<BlogUser>.Failure(result.Errors);
-        return Result<BlogUser>.Success(result.Value);
+        if (!result.IsSuccess) return Result<BaseUser>.Failure(result.Errors);
+        return Result<BaseUser>.Success(result.Value);
     }
 
-    public static async Task<Result<BlogUser>> GetByName(
+    public static async Task<Result<BaseUser>> GetByName(
         string user,
         [FromServices] IUserService service)
     {
         var result = await service.GetUserByNameAsync(user);
-        if (!result.IsSuccess) return Result<BlogUser>.Failure(result.Errors);
-        return Result<BlogUser>.Success(result.Value);
+        if (!result.IsSuccess) return Result<BaseUser>.Failure(result.Errors);
+        return Result<BaseUser>.Success(result.Value);
     }
 
-    public static async Task<Result<BlogUser>> GetByEmail(
+    public static async Task<Result<BaseUser>> GetByEmail(
        string email,
        [FromServices] IUserService service)
     {
         var result = await service.GetUserByEmailAsync(email);
-        if (!result.IsSuccess) return Result<BlogUser>.Failure(result.Errors);
-        return Result<BlogUser>.Success(result.Value);
+        if (!result.IsSuccess) return Result<BaseUser>.Failure(result.Errors);
+        return Result<BaseUser>.Success(result.Value);
     }
 
-    public static async Task<Result<BlogUser>> DeleteOwnAccount(
+    public static async Task<Result<BaseUser>> DeleteOwnAccount(
         [FromServices] IUserService service,
         ClaimsPrincipal principal)
     {
         var id = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
         var result = await service.DeleteAccountWithId(id!);
-        if (!result.IsSuccess) return Result<BlogUser>.Failure(result.Errors);
-        return Result<BlogUser>.Success(result.Value);
+        if (!result.IsSuccess) return Result<BaseUser>.Failure(result.Errors);
+        return Result<BaseUser>.Success(result.Value);
     }
 
-    public static async Task<Result<BlogUser>> DeleteWithId(
+    public static async Task<Result<BaseUser>> DeleteWithId(
         [FromServices] IUserService service,
         [FromRoute] string userId)
     {
         var result = await service.DeleteAccountWithId(userId);
-        if (!result.IsSuccess) return Result<BlogUser>.Failure(result.Errors);
-        return Result<BlogUser>.Success(result.Value);
+        if (!result.IsSuccess) return Result<BaseUser>.Failure(result.Errors);
+        return Result<BaseUser>.Success(result.Value);
     }
 
     public static Result<LoggedUserRecord> LoggedUser(ClaimsPrincipal user)

@@ -103,7 +103,7 @@ public class PostServiceTests
             Title = "New Test",
             Content = "New Content",
             AuthorId = loggedUserId,
-            PostStatus = PostStatus.published
+            PostStatus = Status.published
         };
 
         var updatedPost = await _postService.UpdateAsync(newData, CancellationToken.None);
@@ -112,8 +112,8 @@ public class PostServiceTests
         Assert.IsTrue(post1Result.IsSuccess);
         Assert.IsTrue(updatedPost.IsSuccess);
         Assert.IsTrue(updatedPost.Value.Title == newData.Title);
-        Assert.IsTrue(updatedPost.Value.Content ==  newData.Content);
-        Assert.IsTrue(updatedPost.Value.PostStatus == PostStatus.published);
+        Assert.IsTrue(updatedPost.Value.Content == newData.Content);
+        Assert.IsTrue(updatedPost.Value.PostStatus == Status.published);
         Assert.IsTrue(updatedPost.Value.PostId == post1Result.Value.PostId);
         Assert.IsTrue(updatedPost.Value.AuthorId == post1Result.Value.AuthorId);
     }
@@ -169,14 +169,14 @@ public class PostServiceTests
         });
 
         var ct = new CancellationToken();
-        var palpatinePosts = _postService.GetAllByAuthorNameAsync(palpatineName, ct, "Title", 1, 10, true, true, PostStatus.draft);
+        var palpatinePosts = _postService.GetAllByAuthorNameAsync(palpatineName, ct, "Title", 1, 10, true, true, Status.draft);
         List<PostModel> palpatinePostsInDb = new();
         await foreach (var post in palpatinePosts.WithCancellation(ct))
         {
             palpatinePostsInDb.Add(post);
         }
 
-        var allPosts = _postService.GetAllAsync(ct, postStatus: PostStatus.draft); 
+        var allPosts = _postService.GetAllAsync(ct, postStatus: Status.draft);
         var allPostsInDb = new List<PostModel>();
         await foreach (var post in allPosts.WithCancellation(ct))
         {
@@ -221,7 +221,7 @@ public class PostServiceTests
         });
 
         var ct = new CancellationToken();
-        var darthLinuxerPosts = _postService.GetAllByAuthorIdAsync(darthLinuxerId, ct, "Title", 1, 10, true, true, postStatus: PostStatus.draft);
+        var darthLinuxerPosts = _postService.GetAllByAuthorIdAsync(darthLinuxerId, ct, "Title", 1, 10, true, true, postStatus: Status.draft);
         List<PostModel> darthLinuxerPostsInDb = new();
         await foreach (var post in darthLinuxerPosts.WithCancellation(ct))
         {
@@ -234,7 +234,7 @@ public class PostServiceTests
         Assert.IsTrue(darthLinuxerPostsInDb.Count() == 2);
     }
 
-     [TestMethod]
+    [TestMethod]
     public async Task GetAllPostsByTitle_ShouldReturnPosts()
     {
         //Arrange
@@ -262,7 +262,7 @@ public class PostServiceTests
         });
 
         var ct = new CancellationToken();
-        var darthLinuxerPosts = _postService.GetAllByTitleAsync("another", ct, "Title", 1, 10, true, true, postStatus: PostStatus.draft);
+        var darthLinuxerPosts = _postService.GetAllByTitleAsync("another", ct, "Title", 1, 10, true, true, postStatus: Status.draft);
         List<PostModel> darthLinuxerPostsInDb = new();
         await foreach (var post in darthLinuxerPosts.WithCancellation(ct))
         {
@@ -275,7 +275,7 @@ public class PostServiceTests
         Assert.IsTrue(darthLinuxerPostsInDb.Count() == 1);
     }
 
-     [TestMethod]
+    [TestMethod]
     public async Task GetAllPostsByContent_ShouldReturnPosts()
     {
         //Arrange
@@ -303,7 +303,7 @@ public class PostServiceTests
         });
 
         var ct = new CancellationToken();
-        var darthLinuxerPosts = _postService.GetAllByContentsAsync("another", ct, "Title", 1, 10, true, true, postStatus: PostStatus.draft);
+        var darthLinuxerPosts = _postService.GetAllByContentsAsync("another", ct, "Title", 1, 10, true, true, postStatus: Status.draft);
         List<PostModel> darthLinuxerPostsInDb = new();
         await foreach (var post in darthLinuxerPosts.WithCancellation(ct))
         {

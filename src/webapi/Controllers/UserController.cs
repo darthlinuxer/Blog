@@ -15,7 +15,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     [Route("getall")]
     [Authorize("EditorPolicy")]
-    public async IAsyncEnumerable<BlogUser?> GetAllAsync(
+    public async IAsyncEnumerable<BaseUser?> GetAllAsync(
    [FromBody] PaginationRecord pagination,
    bool includePosts,
    [EnumeratorCancellation] CancellationToken ct)
@@ -38,7 +38,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     [Route("getallinrole")]
     [Authorize("EditorPolicy")]
-    public async IAsyncEnumerable<BlogUser?> GetAllInRoleAsync(
+    public async IAsyncEnumerable<BaseUser?> GetAllInRoleAsync(
         [FromBody] PaginationRecord pagination,
         string role,
         bool includePosts,

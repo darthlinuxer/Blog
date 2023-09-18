@@ -28,7 +28,7 @@ public class PostsController : ControllerBase
                                                  pagination.descending,
                                                  ["Author", "Comments"],
                                                  asNoTracking: true);
-                                                 
+
         await foreach (var post in postsAsync.WithCancellation(ct))
         {
             if (ct.IsCancellationRequested) break;
@@ -52,7 +52,7 @@ public class PostsController : ControllerBase
                                                  pagination.descending,
                                                  asNoTracking: true,
                                                  ["Author", "Comments"],
-                                                 postStatus: PostStatus.published
+                                                 postStatus: Status.published
                                                  );
         await foreach (var post in postsAsync.WithCancellation(ct))
         {
@@ -77,7 +77,7 @@ public class PostsController : ControllerBase
                                                  pagination.descending,
                                                  asNoTracking: true,
                                                  ["Author", "Comments"],
-                                                 postStatus: PostStatus.draft
+                                                 postStatus: Status.draft
                                                  );
         await foreach (var post in postsAsync.WithCancellation(ct))
         {
@@ -102,7 +102,7 @@ public class PostsController : ControllerBase
                                                  pagination.descending,
                                                  asNoTracking: true,
                                                  ["Author", "Comments"],
-                                                 postStatus: PostStatus.rejected
+                                                 postStatus: Status.rejected
                                                  );
         await foreach (var post in postsAsync.WithCancellation(ct))
         {
@@ -127,7 +127,7 @@ public class PostsController : ControllerBase
                                                  pagination.descending,
                                                  asNoTracking: true,
                                                  ["Author", "Comments"],
-                                                 postStatus: PostStatus.pending
+                                                 postStatus: Status.pending
                                                  );
         await foreach (var post in postsAsync.WithCancellation(ct))
         {
@@ -152,7 +152,7 @@ public class PostsController : ControllerBase
                                                  pagination.descending,
                                                  asNoTracking: true,
                                                  ["Author", "Comments"],
-                                                 postStatus: PostStatus.approved
+                                                 postStatus: Status.approved
                                                  );
         await foreach (var post in postsAsync.WithCancellation(ct))
         {
@@ -177,7 +177,7 @@ public class PostsController : ControllerBase
                                                  pagination.count,
                                                  pagination.descending,
                                                  asNoTracking: true,
-                                                 PostStatus.published
+                                                 Status.published
                                                  );
         await foreach (var post in posts.WithCancellation(ct))
         {
@@ -203,7 +203,7 @@ public class PostsController : ControllerBase
                                                  pagination.descending,
                                                  asNoTracking: true,
                                                  ["Author", "Comments"],
-                                                 PostStatus.published
+                                                 Status.published
                                                  );
         await foreach (var post in posts.WithCancellation(ct))
         {
@@ -229,7 +229,7 @@ public class PostsController : ControllerBase
                                                  pagination.descending,
                                                  asNoTracking: true,
                                                  ["Author", "Comments"],
-                                                 PostStatus.published
+                                                 Status.published
                                                  );
         await foreach (var post in posts.WithCancellation(ct))
         {
@@ -271,7 +271,7 @@ public class PostsController : ControllerBase
         [FromQuery] string status,
         [EnumeratorCancellation] CancellationToken ct)
     {
-        PostStatus postStatus;
+        Status postStatus;
         if (!Enum.TryParse(status, out postStatus)) yield break;
         var posts = _service.GetAllByAuthorNameAsync(
             author,
@@ -304,7 +304,7 @@ public class PostsController : ControllerBase
                                          descending: pagination.descending,
                                          includeNavigationNames: ["Author", "Comments"],
                                          asNoTracking: true,
-                                         postStatus: PostStatus.published
+                                         postStatus: Status.published
                                          );
 
         await foreach (var post in posts.WithCancellation(ct))

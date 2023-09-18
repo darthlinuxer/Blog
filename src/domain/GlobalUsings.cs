@@ -8,3 +8,6 @@ global using Microsoft.AspNetCore.Identity;
 global using Domain.Enums;
 global using System.Text.Json.Serialization;
 global using System.Security.Claims;
+global using FluentValidation;
+global using Microsoft.AspNetCore.Mvc;
+global using System.Collections.ObjectModel;
