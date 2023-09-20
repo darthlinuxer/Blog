@@ -71,7 +71,7 @@ public interface IArticleRepository : IGenericRepository<Article>
         Status postStatus = Status.published
         );
 
-    public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsForPostAsync(
+    public ConfiguredCancelableAsyncEnumerable<Article?> GetAllCommentsForPostAsync(
       int postId,
       int page,
       int count,
@@ -80,7 +80,7 @@ public interface IArticleRepository : IGenericRepository<Article>
       string[]? navigation,
       CancellationToken ct);
 
-    public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsOfUserAsync(
+    public ConfiguredCancelableAsyncEnumerable<Article?> GetAllCommentsOfUserAsync(
         string username,
         int page,
         int count,

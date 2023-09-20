@@ -10,6 +10,8 @@ public class SharedSetup
     public ServiceProvider ServiceProvider;
     public IPostService PostService;
     public IPersonService<Person> PersonService;
+    public IAuthorService AuthorService;
+    public IPersonService<PublicUser> PublicUserService;
     public ICommentService CommentService;
     public RoleManager<IdentityRole> RoleManager;
 
@@ -28,6 +30,7 @@ public class SharedSetup
           .AddScoped<IPostService, PostService>()
           .AddScoped<ICommentService, CommentService>()
           .AddScoped<IPersonService<Person>, PersonService>()
+          .AddScoped<IAuthorService, AuthorService>()
           .AddScoped(implementationFactory: sp => sp.GetRequiredService<IDbContextFactory<BlogContext>>()
                                                     .CreateDbContext())
           .AddTransient<IValidator<PostModelDTO>, PostModelDTOValidations>()

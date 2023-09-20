@@ -4,7 +4,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
-        builder.Property(c => c.PersonId).IsRequired();
+        builder.Property(c => c.BaseUserId).IsRequired();
         builder.Property(c => c.PostId).IsRequired();
 
         builder.HasOne(c => c.Post)
@@ -12,9 +12,9 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
              .HasForeignKey(c => c.PostId)
              .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(c => c.Person)
+        builder.HasOne(c => c.BaseUser)
                .WithMany(c => c.Comments)
-               .HasForeignKey(c => c.PersonId)
+               .HasForeignKey(c => c.BaseUserId)
                .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(c => c.ParentComment)

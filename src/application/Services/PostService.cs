@@ -25,7 +25,7 @@ public class PostService : IPostService
         var addedPost = await _unitOfWork.Posts.AddAsync(entity);
         if (addedPost is null) return Result<PostModel>.Failure(["Post not added!"]);
         await _unitOfWork.CompleteAsync();
-        return Result<PostModel>.Success(addedPost);
+        return Result<PostModel>.Success(entity);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllAsync(

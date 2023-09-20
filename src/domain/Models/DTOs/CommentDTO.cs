@@ -43,9 +43,8 @@ public sealed record CommentDTO : ArticleDTO
             Title = dto.Title,
             Content = dto.Content,
             PostId = dto.PostId,
-            PersonId = dto.BaseUserId,
+            BaseUserId = dto.BaseUserId,
             Post = dto.Post,
-            Comments = dto.Comments?.Select(c => (Comment)c).ToList()
         };
         
 

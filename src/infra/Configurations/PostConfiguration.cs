@@ -19,7 +19,5 @@ public class PostConfiguration : IEntityTypeConfiguration<PostModel>
                      .OnDelete(DeleteBehavior.Cascade)
                      .IsRequired();
 
-              builder.Navigation("Author");
-
        }
 }

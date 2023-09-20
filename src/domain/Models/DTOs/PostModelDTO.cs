@@ -10,23 +10,16 @@ public sealed record PostModelDTO: ArticleDTO
 	[Required]
     public string AuthorId { get; init; }
 
-	public ICollection<CommentDTO>? Comments {get; set;}
+	public ICollection<CommentDTO>? CommentDTOs {get; set;}
 
 	public static implicit operator PostModel(PostModelDTO dto)
 	{
-		// return new PostModel(dto.AuthorId, dto.Title, dto.Content)
-		// {
-		// 	Id = dto.Id,
-		// 	Comments = dto.Comments?.Select(c=>(Comment)c).ToList()
-		// };
-
 		return new PostModel()
 		{
 			AuthorId = dto.AuthorId,
 			Title = dto.Title,
 			Content = dto.Content,
 			Id = dto.Id,
-			Comments = dto.Comments?.Select(c=>(Comment)c).ToList()
 		};
 	}
 }
