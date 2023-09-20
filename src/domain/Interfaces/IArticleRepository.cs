@@ -1,8 +1,8 @@
 namespace Domain.Interfaces;
 
-public interface IPostRepository : IGenericRepository<PostModel>
+public interface IArticleRepository : IGenericRepository<Article>
 {
-    ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllAsync(
+    ConfiguredCancelableAsyncEnumerable<Article?> GetAllAsync(
        CancellationToken ct,
        string orderBy = "Title",
        int page = 1,
@@ -13,7 +13,7 @@ public interface IPostRepository : IGenericRepository<PostModel>
        Status postStatus = Status.published
        );
 
-    ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllFilteredAsync(
+    ConfiguredCancelableAsyncEnumerable<Article?> GetAllFilteredAsync(
       string where,
       CancellationToken ct,
       string orderBy = "Title",
@@ -24,7 +24,7 @@ public interface IPostRepository : IGenericRepository<PostModel>
       string[]? navigation = null
       );
 
-    ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorNameAsync(
+    ConfiguredCancelableAsyncEnumerable<Article?> GetAllByAuthorNameAsync(
         string author,
         CancellationToken ct,
         string orderBy = "Title",
@@ -35,7 +35,7 @@ public interface IPostRepository : IGenericRepository<PostModel>
         Status status = Status.published
         );
 
-    ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorIdAsync(
+    ConfiguredCancelableAsyncEnumerable<Article?> GetAllByAuthorIdAsync(
        string authorId,
        CancellationToken ct,
        string orderBy = "Title",
@@ -47,7 +47,7 @@ public interface IPostRepository : IGenericRepository<PostModel>
        Status postStatus = Status.published
        );
 
-    ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByTitleAsync(
+    ConfiguredCancelableAsyncEnumerable<Article?> GetAllByTitleAsync(
         string title,
         CancellationToken ct,
         string orderBy = "Title",
@@ -59,7 +59,7 @@ public interface IPostRepository : IGenericRepository<PostModel>
         Status postStatus = Status.published
         );
 
-    ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByContentsAsync(
+    ConfiguredCancelableAsyncEnumerable<Article?> GetAllByContentsAsync(
         string content,
         CancellationToken ct,
         string orderBy = "Title",
@@ -70,5 +70,23 @@ public interface IPostRepository : IGenericRepository<PostModel>
         string[]? navigation = null,
         Status postStatus = Status.published
         );
+
+    public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsForPostAsync(
+      int postId,
+      int page,
+      int count,
+      bool descending,
+      bool asNoTracking,
+      string[]? navigation,
+      CancellationToken ct);
+
+    public ConfiguredCancelableAsyncEnumerable<Comment?> GetAllCommentsOfUserAsync(
+        string username,
+        int page,
+        int count,
+        bool descending,
+        bool asNoTracking,
+        string[]? navigation,
+        CancellationToken ct);
 
 }

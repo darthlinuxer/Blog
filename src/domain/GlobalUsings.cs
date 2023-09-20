@@ -10,4 +10,4 @@ global using System.Text.Json.Serialization;
 global using System.Security.Claims;
 global using FluentValidation;
 global using Microsoft.AspNetCore.Mvc;
-global using System.Collections.ObjectModel;
+global using System.ComponentModel.DataAnnotations;

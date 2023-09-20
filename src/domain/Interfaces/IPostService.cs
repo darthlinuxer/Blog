@@ -8,7 +8,7 @@ public interface IPostService
 
   ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllAsync(
       CancellationToken ct,
-      string orderby = "PostId",
+      string orderby = "Id",
       int page = 1,
       int count = 10,
       bool descending = true,
@@ -19,7 +19,7 @@ public interface IPostService
   ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllFilteredAsync(
   string where,
   CancellationToken ct,
-  string orderby = "PostId",
+  string orderby = "Id",
   int page = 1,
   int count = 10,
   bool descending = true,

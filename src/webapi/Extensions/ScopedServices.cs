@@ -7,7 +7,7 @@ public static class ScopedServices
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<ICommentService, CommentService>();
-        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IPersonService<Person>, PersonService>();
         return services;
     }
 }

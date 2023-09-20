@@ -98,4 +98,22 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         return _context.Set<T>().Where(p.Compile()).Count();
     }
+
+    public ConfiguredCancelableAsyncEnumerable<T?> GetAllOfTypeAsync<U>(string where, string orderby, int page, int count, bool descending, string[]? includeNavigationNames, bool asNoTracking, CancellationToken ct) where U : class
+    {
+        try
+        {
+            string direction = descending ? "desc" : "asc";
+            var mainQuery = _context.Set<T>().OfType<U>().Where(where).OrderBy($"{orderby} {direction}").Skip((page - 1) * count).Take(count);
+            if (asNoTracking) mainQuery = mainQuery?.AsNoTracking();
+            if (includeNavigationNames?.Length > 0) foreach (var navigation in includeNavigationNames) mainQuery = mainQuery!.Include(navigation);
+            var result = mainQuery!.Cast<T>().AsAsyncEnumerable().WithCancellation(ct);
+            return result;
+            
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 }

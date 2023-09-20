@@ -11,3 +11,4 @@ global using System.Text;
 global using Application.Extensions;
 global using FluentValidation;
 global using Domain.Enums;
+global using Microsoft.EntityFrameworkCore;

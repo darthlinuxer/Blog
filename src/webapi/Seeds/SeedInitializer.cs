@@ -2,7 +2,8 @@ namespace WebApi.Seeds;
 
 public static class SeedInitializer
 {
-    public static async Task InitializeAsync(IUserService service)
+    public static async Task InitializeAsync(
+        IPersonService<Person> service)
     {
         await service.RegisterAsync(
             new UserRecordDTO(

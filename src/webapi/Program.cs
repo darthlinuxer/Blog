@@ -56,7 +56,7 @@ app.UseEndpoints(configure =>
 using var scope = app.Services.CreateScope();
 var serviceProvider = scope.ServiceProvider;
 var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-var userService = serviceProvider.GetRequiredService<IUserService>();
+var userService = serviceProvider.GetRequiredService<IPersonService<Person>>();
 RoleInitializer.InitializeAsync(roleManager).Wait();
 SeedInitializer.InitializeAsync(userService).Wait();
 

@@ -4,7 +4,7 @@ public static class IdentityCoreExtensions
 {
     public static IServiceCollection ConfigIdentityCore(this IServiceCollection services)
     {
-        services.AddIdentityCore<BaseUser>(
+        services.AddIdentityCore<Person>(
            options =>
            {
                options.SignIn.RequireConfirmedAccount = false;
@@ -19,10 +19,10 @@ public static class IdentityCoreExtensions
            })
                .AddRoles<IdentityRole>()
                .AddEntityFrameworkStores<BlogContext>()
-               .AddSignInManager<SignInManager<BaseUser>>()
-               .AddUserManager<UserManager<BaseUser>>()
+               .AddSignInManager<SignInManager<Person>>()
+               .AddUserManager<UserManager<Person>>()
                .AddRoleManager<RoleManager<IdentityRole>>();
-
+        
         return services;
     }
 }

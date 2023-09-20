@@ -8,7 +8,7 @@ namespace blog;
 public class PostServiceTests
 {
     private IPostService _postService;
-    private IUserService _userService;
+    private IPersonService<Person> _userService;
     private SharedSetup setup;
     private ServiceProvider _serviceProvider;
 
@@ -16,7 +16,7 @@ public class PostServiceTests
     {
         setup = new SharedSetup();
         _postService = setup.PostService;
-        _userService = setup.UserService;
+        _userService = setup.PersonService;
         _serviceProvider = setup.ServiceProvider;
     }
 
@@ -90,21 +90,18 @@ public class PostServiceTests
         var loggedUserId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
 
         //Act
-        var post1Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = loggedUserId,
-            Title = "Test1",
-            Content = "Test1",
-        });
+        var post1Result = await _postService.AddAsync(new PostModelDTO(
+            authorId: loggedUserId,
+            title: "Test1",
+            content: "Test1"
+        ));
 
-        var newData = new PostModelDTO()
-        {
-            PostId = post1Result.Value.PostId,
-            Title = "New Test",
-            Content = "New Content",
-            AuthorId = loggedUserId,
-            PostStatus = Status.published
-        };
+        var newData = new PostModelDTO(
+            loggedUserId,
+            "New Title",
+            "New Content"
+        ) with
+        { Id = post1Result.Value.Id };
 
         var updatedPost = await _postService.UpdateAsync(newData, CancellationToken.None);
 
@@ -113,8 +110,8 @@ public class PostServiceTests
         Assert.IsTrue(updatedPost.IsSuccess);
         Assert.IsTrue(updatedPost.Value.Title == newData.Title);
         Assert.IsTrue(updatedPost.Value.Content == newData.Content);
-        Assert.IsTrue(updatedPost.Value.PostStatus == Status.published);
-        Assert.IsTrue(updatedPost.Value.PostId == post1Result.Value.PostId);
+        Assert.IsTrue(updatedPost.Value.Status == Status.published);
+        Assert.IsTrue(updatedPost.Value.Id == post1Result.Value.Id);
         Assert.IsTrue(updatedPost.Value.AuthorId == post1Result.Value.AuthorId);
     }
 
@@ -139,21 +136,18 @@ public class PostServiceTests
 
         //Act
         //Adding 2 posts from Writer DarthLinuxer
-        var post1Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = darthLinuxerId,
-            Title = "Test1",
-            Content = "Content1"
-            //PostStatus is hidden as draft
-        });
+        var post1Result = await _postService.AddAsync(new PostModelDTO(
+            darthLinuxerId,
+            "Test1",
+            "Content1"
+        ));
+        //PostStatus is hidden as draft
 
-        var post2Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = darthLinuxerId,
-            Title = "Test2",
-            Content = "Content2"
-            //PostStatus is hidden as draft
-        });
+        var post2Result = await _postService.AddAsync(new PostModelDTO(
+            darthLinuxerId,
+            "Test2",
+            "Content2"
+        ));
 
         var palpatineLoggedResult = await _userService.LoginAsync("palpatine", "ChangeMe1$");
         token = palpatineLoggedResult.Value;
@@ -161,12 +155,10 @@ public class PostServiceTests
         var palpatineId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
         var palpatineName = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
 
-        var post3Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = palpatineId,
-            Title = "Test3",
-            Content = "Content3",
-        });
+        var post3Result = await _postService.AddAsync(new PostModelDTO(
+            palpatineId,
+            "Test3",
+            "Content3"));
 
         var ct = new CancellationToken();
         var palpatinePosts = _postService.GetAllByAuthorNameAsync(palpatineName, ct, "Title", 1, 10, true, true, Status.draft);
@@ -206,19 +198,15 @@ public class PostServiceTests
 
         //Act
         //Adding 2 posts from Writer DarthLinuxer
-        var post1Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = darthLinuxerId,
-            Title = "This is a Test Title",
-            Content = "This is a test Content"
-        });
+        var post1Result = await _postService.AddAsync(new PostModelDTO(
+            darthLinuxerId,
+            "This is a Test Title",
+            "This is a test Content"));
 
-        var post2Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = darthLinuxerId,
-            Title = "This is another Title",
-            Content = "This is another Content"
-        });
+        var post2Result = await _postService.AddAsync(new PostModelDTO(
+            darthLinuxerId,
+            "This is another Title",
+            "This is another Content"));
 
         var ct = new CancellationToken();
         var darthLinuxerPosts = _postService.GetAllByAuthorIdAsync(darthLinuxerId, ct, "Title", 1, 10, true, true, postStatus: Status.draft);
@@ -247,19 +235,16 @@ public class PostServiceTests
 
         //Act
         //Adding 2 posts from Writer DarthLinuxer
-        var post1Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = darthLinuxerId,
-            Title = "This is a Test Title",
-            Content = "This is a test Content"
-        });
+        var post1Result = await _postService.AddAsync(new PostModelDTO(
+             darthLinuxerId,
+             "This is a Test Title",
+             "This is a test Content"));
 
-        var post2Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = darthLinuxerId,
-            Title = "This is another Title",
-            Content = "This is another Content"
-        });
+
+        var post2Result = await _postService.AddAsync(new PostModelDTO(
+            darthLinuxerId,
+            "This is another Title",
+            "This is another Content"));
 
         var ct = new CancellationToken();
         var darthLinuxerPosts = _postService.GetAllByTitleAsync("another", ct, "Title", 1, 10, true, true, postStatus: Status.draft);
@@ -288,19 +273,16 @@ public class PostServiceTests
 
         //Act
         //Adding 2 posts from Writer DarthLinuxer
-        var post1Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = darthLinuxerId,
-            Title = "This is a Test Title",
-            Content = "This is a test Content"
-        });
+        var post1Result = await _postService.AddAsync(new PostModelDTO(
+               darthLinuxerId,
+               "This is a Test Title",
+               "This is a test Content"));
 
-        var post2Result = await _postService.AddAsync(new PostModelDTO()
-        {
-            AuthorId = darthLinuxerId,
-            Title = "This is another Title",
-            Content = "This is another Content"
-        });
+
+        var post2Result = await _postService.AddAsync(new PostModelDTO(
+            darthLinuxerId,
+            "This is another Title",
+            "This is another Content"));
 
         var ct = new CancellationToken();
         var darthLinuxerPosts = _postService.GetAllByContentsAsync("another", ct, "Title", 1, 10, true, true, postStatus: Status.draft);

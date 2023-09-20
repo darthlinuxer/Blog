@@ -17,7 +17,7 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
        string[]? navigation = null,
        Status postStatus = Status.published)
     {
-        return GetAllAsync(where: $"PostId > 0 && PostStatus == \"{postStatus}\"",
+        return GetAllAsync(where: $"Id > 0 && Status == \"{postStatus}\"",
                            orderby: orderBy,
                            page: page,
                            count: count,
@@ -58,7 +58,7 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         Status postStatus = Status.published)
     {
         return GetAllAsync(
-            where: $"AuthorId == \"{authorId}\" && PostStatus == \"{postStatus}\"",
+            where: $"AuthorId == \"{authorId}\" && Status == \"{postStatus}\"",
             orderby: orderBy,
             page: page,
             count: count,
@@ -76,10 +76,10 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         int count = 10,
         bool descending = true,
         bool asNoTracking = true,
-        Status postStatus = Status.published)
+        Status status = Status.published)
     {
         return GetAllAsync(
-            where: $"@Author.Username == \"{author}\" && PostStatus == \"{postStatus}\"",
+            where: $"@Author.UserName == \"{author}\" && Status == \"{status}\"",
             orderby: orderBy,
             page: page,
             count: count,
@@ -101,7 +101,7 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         Status postStatus = Status.published)
     {
         return GetAllAsync(
-            where: $"@Content.Contains(\"{content}\") && PostStatus == \"{postStatus}\"",
+            where: $"@Content.Contains(\"{content}\") && Status == \"{postStatus}\"",
             orderby: orderBy,
             page: page,
             count: count,
@@ -123,7 +123,7 @@ public class PostRepository : GenericRepository<PostModel>, IPostRepository
         Status postStatus = Status.published)
     {
         return GetAllAsync(
-            where: $"@Title.Contains(\"{title}\") && PostStatus == \"{postStatus}\"",
+            where: $"@Title.Contains(\"{title}\") && Status == \"{postStatus}\"",
             orderby: orderBy,
             page: page,
             count: count,

@@ -9,7 +9,7 @@ public class SharedSetup
 {
     public ServiceProvider ServiceProvider;
     public IPostService PostService;
-    public IUserService UserService;
+    public IPersonService<Person> PersonService;
     public ICommentService CommentService;
     public RoleManager<IdentityRole> RoleManager;
 
@@ -27,12 +27,12 @@ public class SharedSetup
           .AddScoped<IUnitOfWork, UnitOfWork>()
           .AddScoped<IPostService, PostService>()
           .AddScoped<ICommentService, CommentService>()
-          .AddScoped<IUserService, UserService>()
+          .AddScoped<IPersonService<Person>, PersonService>()
           .AddScoped(implementationFactory: sp => sp.GetRequiredService<IDbContextFactory<BlogContext>>()
                                                     .CreateDbContext())
           .AddTransient<IValidator<PostModelDTO>, PostModelDTOValidations>()
           .AddTransient<IValidator<PostLifeCycle>, PostLifeCycleValidations>();
-        services.AddIdentityCore<BaseUser>(
+        services.AddIdentityCore<Person>(
           options =>
           {
               options.SignIn.RequireConfirmedAccount = false;
@@ -47,8 +47,8 @@ public class SharedSetup
           })
               .AddRoles<IdentityRole>()
               .AddEntityFrameworkStores<BlogContext>()
-              .AddUserManager<UserManager<BaseUser>>()
-              .AddSignInManager<SignInManager<BaseUser>>()
+              .AddUserManager<UserManager<Person>>()
+              .AddSignInManager<SignInManager<Person>>()
               .AddRoleManager<RoleManager<IdentityRole>>();
 
         services.AddAuthentication(options =>
@@ -103,7 +103,7 @@ public class SharedSetup
 
         ServiceProvider = services.BuildServiceProvider();
         RoleManager = ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        UserService = ServiceProvider.GetRequiredService<IUserService>();
+        PersonService = ServiceProvider.GetRequiredService<IPersonService<Person>>();
         PostService = ServiceProvider.GetRequiredService<IPostService>();
         CommentService = ServiceProvider.GetRequiredService<ICommentService>();
     }
@@ -120,7 +120,7 @@ public class SharedSetup
             }
         }
 
-        UserService.RegisterAsync(
+        PersonService.RegisterAsync(
            new UserRecordDTO(
                username: "admin",
                password: "ChangeMe1$",
@@ -129,7 +129,7 @@ public class SharedSetup
            )
        ).GetAwaiter().GetResult();
 
-        UserService.RegisterAsync(
+        PersonService.RegisterAsync(
                new UserRecordDTO(
                 username: "darthlinuxer",
                 password: "ChangeMe1$",
@@ -138,7 +138,7 @@ public class SharedSetup
             )
         ).GetAwaiter().GetResult();
 
-        UserService.RegisterAsync(
+        PersonService.RegisterAsync(
               new UserRecordDTO(
                username: "luke",
                password: "ChangeMe1$",

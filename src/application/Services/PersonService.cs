@@ -1,16 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Application.Services;
 
-public class UserService : IUserService
+public class PersonService: IPersonService<Person>
 {
-    private readonly UserManager<BaseUser> _userManager;
-    private readonly SignInManager<BaseUser> _signInManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    protected readonly UserManager<Person> _userManager;
+    protected readonly SignInManager<Person> _signInManager;
+    protected readonly RoleManager<IdentityRole> _roleManager;
 
-    public UserService(
-        UserManager<BaseUser> userManager,
-        SignInManager<BaseUser> signInManager,
+    public PersonService(
+        UserManager<Person> userManager,
+        SignInManager<Person> signInManager,
         RoleManager<IdentityRole> roleManager
         )
     {
@@ -19,58 +17,60 @@ public class UserService : IUserService
         _roleManager = roleManager;
     }
 
-    public async Task<Result<BaseUser>> RegisterAsync(UserRecordDTO input)
+    public async Task<Result<Person>> RegisterAsync(UserRecordDTO input)
     {
-        var roleInDb = await _roleManager.RoleExistsAsync(input.role);
+         var roleInDb = await _roleManager.RoleExistsAsync(input.role);
         if (roleInDb is false)
-            return Result<BaseUser>.Failure([$"Role {input.role} is invalid!"]);
+            return Result<Person>.Failure([$"Role {input.role} is invalid!"]);
 
-        var blogUser = await _userManager.FindByNameAsync(input.username);
-        if (blogUser is not null) return Result<BaseUser>.Failure(["User already exists"]);
+        var person = await _userManager.FindByNameAsync(input.username);
+        if (person is not null) return Result<Person>.Failure(["User already exists"]);
 
-        blogUser = new Author
+
+        var userToAdd = new Person
         {
             UserName = input.username,
             PasswordHash = "My Internal Secret Password Hash",
             Email = input.email
         };
 
-        var result = await _userManager.CreateAsync(blogUser, input.password);
+        var result = await _userManager.CreateAsync(userToAdd, input.password);
         if (!result.Succeeded)
-            return Result<BaseUser>.Failure(
+            return Result<Person>.Failure(
                 result.Errors.Select(e => e.Description).ToList<string>());
 
-        var roleAddResult = await _userManager.AddToRoleAsync(blogUser, input.role);
-        if (!roleAddResult.Succeeded) return Result<BaseUser>.Failure(roleAddResult.Errors.Select(c => c.Description).ToList());
-        return Result<BaseUser>.Success(blogUser);
+        var roleAddResult = await _userManager.AddToRoleAsync(userToAdd, input.role);
+        if (!roleAddResult.Succeeded) return Result<Person>.Failure(roleAddResult.Errors.Select(c => c.Description).ToList());
+        return Result<Person>.Success(userToAdd);
+
     }
 
-    public async Task<Result<BaseUser>> GetUserByIdAsync(string id)
+    public async Task<Result<Person>> GetUserByIdAsync(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
-        if (user is null) return Result<BaseUser>.Failure(["Not found"]);
-        return Result<BaseUser>.Success(user);
+        if (user is null) return Result<Person>.Failure(["Not found"]);
+        return Result<Person>.Success(user);
     }
 
-    public async Task<Result<BaseUser>> GetUserByEmailAsync(string email)
+    public async Task<Result<Person>> GetUserByEmailAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user is null) return Result<BaseUser>.Failure(["Not found"]);
-        return Result<BaseUser>.Success(user);
+        if (user is null) return Result<Person>.Failure(["Not found"]);
+        return Result<Person>.Success(user);
     }
 
-    public async Task<Result<BaseUser>> GetUserByNameAsync(string name)
+    public async Task<Result<Person>> GetUserByNameAsync(string name)
     {
         var user = await _userManager.FindByNameAsync(name);
-        if (user is null) return Result<BaseUser>.Failure(["Not found"]);
-        return Result<BaseUser>.Success(user);
+        if (user is null) return Result<Person>.Failure(["Not found"]);
+        return Result<Person>.Success(user);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<BaseUser> GetAllUsersFiltered(
-                        Expression<Func<BaseUser, bool>> where,
+    public ConfiguredCancelableAsyncEnumerable<Person> GetAllUsersFiltered(
+                        Expression<Func<Person, bool>> where,
                         int page,
                         int count,
-                        Expression<Func<BaseUser, string>> orderby,
+                        Expression<Func<Person, string>> orderby,
                         bool descending,
                         bool noTracking,
                         CancellationToken ct)
@@ -83,11 +83,11 @@ public class UserService : IUserService
         return users.AsAsyncEnumerable().WithCancellation(ct);
     }
 
-    public async IAsyncEnumerable<BaseUser> GetAllUsersByRole(
+    public async IAsyncEnumerable<Person> GetAllUsersByRole(
                      string role,
                      int page,
                      int count,
-                     Expression<Func<BaseUser, string>> orderby,
+                     Expression<Func<Person, string>> orderby,
                      bool descending,
                      bool noTracking,
                      bool includePosts,
@@ -102,10 +102,10 @@ public class UserService : IUserService
     }
 
 
-    public ConfiguredCancelableAsyncEnumerable<BaseUser> GetAll(
+    public ConfiguredCancelableAsyncEnumerable<Person> GetAll(
                       int page,
                       int count,
-                      Expression<Func<BaseUser, string>> orderby,
+                      Expression<Func<Person, string>> orderby,
                       bool descending,
                       bool noTracking,
                       bool includePosts,
@@ -128,7 +128,7 @@ public class UserService : IUserService
         var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
         if (!result.Succeeded) return Result<string>.Failure(["Invalid Password!"]);
         var roles = await _userManager.GetRolesAsync(user);
-        var token = TokenExtensions.CreateToken(user, roles);
+        var token = TokenExtensions.CreateToken(user as Person, roles);
         return Result<string>.Success(token);
     }
 
@@ -150,7 +150,7 @@ public class UserService : IUserService
         return Result<bool>.Success(isInRole);
     }
 
-    public async Task<Result<bool>> ChangePasswordAsync(BaseUser user, string oldPassword, string newPassword)
+    public async Task<Result<bool>> ChangePasswordAsync(Person user, string oldPassword, string newPassword)
     {
         var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
         if (!result.Succeeded) return Result<bool>.Failure(result.Errors.Select(x => x.Description).ToList());
@@ -177,20 +177,14 @@ public class UserService : IUserService
     }
 
     //---------------------------------------------------------------------------
-    public async Task<Result<BaseUser>> DeleteAccountWithId(string id)
+    public async Task<Result<Person>> DeleteAccountWithId(string id)
     {
         var userExistResult = await GetUserByIdAsync(id);
-        if (!userExistResult.IsSuccess) return Result<BaseUser>.Failure(userExistResult.Errors);
+        if (!userExistResult.IsSuccess) return Result<Person>.Failure(userExistResult.Errors);
         var result = await _userManager.DeleteAsync(userExistResult.Value);
-        if (!result.Succeeded) return Result<BaseUser>.Failure(result.Errors.Select(c => c.Description).ToList());
-        return Result<BaseUser>.Success(userExistResult.Value);
+        if (!result.Succeeded) return Result<Person>.Failure(result.Errors.Select(c => c.Description).ToList());
+        return Result<Person>.Success(userExistResult.Value);
     }
 
     //---------------------------------------------------------------------------
-
-    public async Task<Result<IEnumerable<PostModel>>> GetAllPostsByUserAsync(string username)
-    {
-        var user = await _userManager.FindByNameAsync(username);
-        return Result<IEnumerable<PostModel>>.Success(user!.Posts);
-    }
 }

@@ -4,10 +4,10 @@ namespace WebApi.Controllers;
 [Route("api/credentials/")]
 public class UsersController : ControllerBase
 {
-    private readonly IUserService _service;
+    private readonly IPersonService<Person> _service;
 
     public UsersController(
-        IUserService service)
+        IPersonService<Person> service)
     {
         _service = service;
     }
@@ -15,7 +15,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     [Route("getall")]
     [Authorize("EditorPolicy")]
-    public async IAsyncEnumerable<BaseUser?> GetAllAsync(
+    public async IAsyncEnumerable<Person?> GetAllAsync(
    [FromBody] PaginationRecord pagination,
    bool includePosts,
    [EnumeratorCancellation] CancellationToken ct)
@@ -38,7 +38,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     [Route("getallinrole")]
     [Authorize("EditorPolicy")]
-    public async IAsyncEnumerable<BaseUser?> GetAllInRoleAsync(
+    public async IAsyncEnumerable<Person?> GetAllInRoleAsync(
         [FromBody] PaginationRecord pagination,
         string role,
         bool includePosts,

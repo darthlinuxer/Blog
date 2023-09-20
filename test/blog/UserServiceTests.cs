@@ -3,13 +3,13 @@ namespace blog;
 [TestClass]
 public class UserServiceTests
 {
-    private IUserService _userService;
+    private IPersonService<Person> _userService;
     private SharedSetup setup;
 
     public UserServiceTests()
     {
         setup = new SharedSetup();
-        _userService = setup!.UserService;
+        _userService = setup!.PersonService;
     }
 
     [TestInitialize]
@@ -145,7 +145,7 @@ public class UserServiceTests
                                                      false,
                                                      CancellationToken.None);
 
-        List<BaseUser> writers = new();
+        List<Person> writers = new();
         await foreach (var writer in writersAsync)
         {
             writers.Add(writer);

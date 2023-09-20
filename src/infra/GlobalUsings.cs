@@ -8,4 +8,5 @@ global using System.Linq.Dynamic.Core;
 global using System.Runtime.CompilerServices;
 global using Infra.Configurations;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using Microsoft.AspNetCore.Identity;
 

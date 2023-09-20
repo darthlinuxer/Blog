@@ -34,7 +34,7 @@ public class TokenExtensions
         }
     }
 
-    public static string CreateToken(BaseUser user, IList<string> roles)
+    public static string CreateToken(Person user, IList<string> roles)
     {
         var claims = new List<Claim>{
             new Claim(ClaimTypes.Sid, user.Id),

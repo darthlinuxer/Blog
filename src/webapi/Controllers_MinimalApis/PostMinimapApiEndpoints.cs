@@ -76,7 +76,7 @@ public class PostMinimalApiEndpoints : ICarterModule
                                                      [FromServices] IPostService service,
                                                      CancellationToken ct)
     {
-        var postInDb = await service.GetAsync(c => c.PostId == id && c.PostStatus == Status.published,
+        var postInDb = await service.GetAsync(c => c.Id == id && c.Status == Status.published,
                                           ct,
                                           asNoTracking: true,
                                           ["Author", "Comments"]);
@@ -91,19 +91,13 @@ public class PostMinimalApiEndpoints : ICarterModule
                                     ClaimsPrincipal principal)
     {
         var loggedUserId = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)!.Value;
-        postDTO.AuthorId = loggedUserId;
-        var addedPost = await service.AddAsync(postDTO);
+        var postToAdd  = postDTO with {AuthorId = loggedUserId};
+        var addedPost = await service.AddAsync(postToAdd);
         if (!addedPost.IsSuccess) return Result<PostModelDTO>.Failure(addedPost.Errors);
 
-        var postAdded = new PostModelDTO
-        {
-            PostId = addedPost.Value.PostId,
-            Title = addedPost.Value.Title,
-            Content = addedPost.Value.Content,
-            DatePublished = addedPost.Value.DatePublished,
-            AuthorId = addedPost.Value.AuthorId
-        };
-        return Result<PostModelDTO>.Success(postAdded);
+        postDTO = postDTO with {Id = addedPost.Value.Id};
+
+        return Result<PostModelDTO>.Success(postDTO);
     }
 
     public async Task<IResult> Put([FromBody] PostModelDTO postDTO,

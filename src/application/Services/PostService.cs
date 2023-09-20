@@ -30,7 +30,7 @@ public class PostService : IPostService
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllAsync(
         CancellationToken ct,
-        string orderby = "PostId",
+        string orderby = "Id",
         int page = 1,
         int count = 10,
         bool descending = true,
@@ -48,7 +48,7 @@ public class PostService : IPostService
                                              postStatus: postStatus);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllFilteredAsync(string where, CancellationToken ct, string orderby = "PostId", int page = 1, int count = 10, bool descending = true, string[]? includeNavigationNames = null, bool asNoTracking = true)
+    public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllFilteredAsync(string where, CancellationToken ct, string orderby = "Id", int page = 1, int count = 10, bool descending = true, string[]? includeNavigationNames = null, bool asNoTracking = true)
     {
         return _unitOfWork.Posts.GetAllFilteredAsync(where,
                                                      ct,
@@ -68,7 +68,7 @@ public class PostService : IPostService
         int count = 10,
         bool descending = true,
         bool asNoTracking = true,
-        Status postStatus = Status.published)
+        Status status = Status.published)
     {
         return _unitOfWork.Posts.GetAllByAuthorNameAsync(authorname,
                                                          ct,
@@ -77,7 +77,7 @@ public class PostService : IPostService
                                                          count: count,
                                                          descending: descending,
                                                          asNoTracking: asNoTracking,
-                                                         postStatus: postStatus);
+                                                         status: status);
     }
 
     public ConfiguredCancelableAsyncEnumerable<PostModel?> GetAllByAuthorIdAsync(
@@ -170,14 +170,14 @@ public class PostService : IPostService
             if (!validPost.IsValid) return Result<PostModel>.Failure(
                 validPost.Errors.Select(c => c.ErrorMessage).ToList());
 
-            var postInDb = await GetAsync(p: p => p.PostId == entity.PostId,
+            var postInDb = await GetAsync(p: p => p.Id == entity.Id,
                                           ct: ct,
                                           asNoTracking: false,
                                           includeNavigationNames: null);
             if (!postInDb.IsSuccess) return Result<PostModel>.Failure(postInDb.Errors);
             postInDb!.Value.Title = entity.Title;
             postInDb!.Value.Content = entity.Content;
-            postInDb!.Value.PostStatus = entity.PostStatus;
+            postInDb!.Value.Status = entity.Status;
             await _unitOfWork.CompleteAsync();
             return Result<PostModel>.Success(postInDb.Value);
         }
@@ -189,7 +189,7 @@ public class PostService : IPostService
 
     public async Task<Result<PostModel>> RemoveAsync(int postId, CancellationToken ct)
     {
-        var post = await _unitOfWork.Posts.GetAsync(p: c => c.PostId == postId,
+        var post = await _unitOfWork.Posts.GetAsync(p: c => c.Id == postId,
                                                     ct: ct,
                                                     asNoTracking: true,
                                                     includeNavigationNames: null);
@@ -211,7 +211,7 @@ public class PostService : IPostService
 
     public async Task<Result<PostModel>> ChangePostStatus(ClaimsPrincipal principal, int postId, Status moveToStatus, CancellationToken ct)
     {
-        var postInDb = await GetAsync(p: p => p.PostId == postId,
+        var postInDb = await GetAsync(p: p => p.Id == postId,
                                         ct: ct,
                                         asNoTracking: false,
                                         includeNavigationNames: null);
@@ -222,16 +222,16 @@ public class PostService : IPostService
 
         var result = _lifecycleValidator.Validate(new PostLifeCycle()
         {
-            PostId = postInDb.Value.PostId,
+            PostId = postInDb.Value.Id,
             AuthorIdRequestingChange = authorId,
-            Status = postInDb.Value.PostStatus,
+            Status = postInDb.Value.Status,
             MoveToStatus = moveToStatus,
             Role = role
         });
 
         if (!result.IsValid) return Result<PostModel>.Failure(result.Errors.Select(c => c.ErrorMessage).ToList());
 
-        postInDb!.Value.PostStatus = moveToStatus;
+        postInDb!.Value.Status = moveToStatus;
         await _unitOfWork.CompleteAsync();
         return Result<PostModel>.Success(postInDb.Value);
     }

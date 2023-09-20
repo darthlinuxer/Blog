@@ -1,38 +1,38 @@
 namespace Domain.Interfaces;
 
-public interface IUserService
+public interface IPersonService<T> where T : class
 {
-    Task<Result<BaseUser>> RegisterAsync(UserRecordDTO input);
+    Task<Result<T>> RegisterAsync(UserRecordDTO input);
 
-    Task<Result<BaseUser>> GetUserByIdAsync(string id);
+    Task<Result<T>> GetUserByIdAsync(string id);
 
-    Task<Result<BaseUser>> GetUserByEmailAsync(string email);
+    Task<Result<T>> GetUserByEmailAsync(string email);
 
-    Task<Result<BaseUser>> GetUserByNameAsync(string name);
+    Task<Result<T>> GetUserByNameAsync(string name);
 
-    ConfiguredCancelableAsyncEnumerable<BaseUser> GetAllUsersFiltered(
-                      Expression<Func<BaseUser, bool>> where,
+    ConfiguredCancelableAsyncEnumerable<T> GetAllUsersFiltered(
+                      Expression<Func<T, bool>> where,
                       int page,
                       int count,
-                      Expression<Func<BaseUser, string>> orderby,
+                      Expression<Func<T, string>> orderby,
                       bool descending,
                       bool noTracking,
                       CancellationToken ct);
 
-    ConfiguredCancelableAsyncEnumerable<BaseUser> GetAll(
+    ConfiguredCancelableAsyncEnumerable<T> GetAll(
                       int page,
                       int count,
-                      Expression<Func<BaseUser, string>> orderby,
+                      Expression<Func<T, string>> orderby,
                       bool descending,
                       bool noTracking,
                       bool includePosts,
                       CancellationToken ct);
 
-    IAsyncEnumerable<BaseUser> GetAllUsersByRole(
+    IAsyncEnumerable<T> GetAllUsersByRole(
                      string role,
                      int page,
                      int count,
-                     Expression<Func<BaseUser, string>> orderby,
+                     Expression<Func<T, string>> orderby,
                      bool descending,
                      bool noTracking,
                      bool includePosts,
@@ -41,9 +41,9 @@ public interface IUserService
 
     Task<Result<string>> LoginAsync(string username, string password);
 
-    Task<Result<BaseUser>> DeleteAccountWithId(string id);
+    Task<Result<T>> DeleteAccountWithId(string id);
 
-    Task<Result<bool>> ChangePasswordAsync(BaseUser user, string oldPassword, string newPassword);
+    Task<Result<bool>> ChangePasswordAsync(T user, string oldPassword, string newPassword);
 
     Task<Result<string>> ForgotPasswordAsync(string email);
 
@@ -52,6 +52,4 @@ public interface IUserService
     Task<Result<bool>> IsUserInRoleAsync(string username, string role);
 
     Task<Result<bool>> IsUserIdInRoleAsync(string userId, string role);
-
-    Task<Result<IEnumerable<PostModel>>> GetAllPostsByUserAsync(string username);
 }
