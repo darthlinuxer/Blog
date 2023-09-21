@@ -23,7 +23,7 @@ public class CredentialEndpoints : ICarterModule
 
     public static async Task<Result<Person>> GetById(
         string userId,
-        [FromServices] IPersonService<Person> service)
+        [FromServices] IPersonService service)
     {
         var result = await service.GetUserByIdAsync(userId);
         if (!result.IsSuccess) return Result<Person>.Failure(result.Errors);
@@ -32,7 +32,7 @@ public class CredentialEndpoints : ICarterModule
 
     public static async Task<Result<Person>> GetByName(
         string user,
-        [FromServices] IPersonService<Person> service)
+        [FromServices] IPersonService service)
     {
         var result = await service.GetUserByNameAsync(user);
         if (!result.IsSuccess) return Result<Person>.Failure(result.Errors);
@@ -41,7 +41,7 @@ public class CredentialEndpoints : ICarterModule
 
     public static async Task<Result<Person>> GetByEmail(
        string email,
-       [FromServices] IPersonService<Person> service)
+       [FromServices] IPersonService service)
     {
         var result = await service.GetUserByEmailAsync(email);
         if (!result.IsSuccess) return Result<Person>.Failure(result.Errors);
@@ -49,7 +49,7 @@ public class CredentialEndpoints : ICarterModule
     }
 
     public static async Task<Result<Person>> DeleteOwnAccount(
-        [FromServices] IPersonService<Person> service,
+        [FromServices] IPersonService service,
         ClaimsPrincipal principal)
     {
         var id = principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
@@ -59,7 +59,7 @@ public class CredentialEndpoints : ICarterModule
     }
 
     public static async Task<Result<Person>> DeleteWithId(
-        [FromServices] IPersonService<Person> service,
+        [FromServices] IPersonService service,
         [FromRoute] string userId)
     {
         var result = await service.DeleteAccountWithId(userId);
@@ -80,7 +80,7 @@ public class CredentialEndpoints : ICarterModule
 
     public static async Task<IResult> Login(
                     [FromBody] LoginRecord input,
-                    [FromServices] IPersonService<Person> service)
+                    [FromServices] IPersonService service)
     {
         var blogUser = await service.GetUserByNameAsync(input.userName);
         if (!blogUser.IsSuccess) return Results.BadRequest(blogUser.Errors);
@@ -92,7 +92,7 @@ public class CredentialEndpoints : ICarterModule
 
     public static async Task<IResult> Register(
                   [FromBody] UserRecordDTO input,
-                  [FromServices] IPersonService<Person> service)
+                  [FromServices] IPersonService service)
     {
         var blogUser = await service.RegisterAsync(input);
         if (!blogUser.IsSuccess) return Results.BadRequest(blogUser.Errors);

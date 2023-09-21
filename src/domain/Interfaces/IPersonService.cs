@@ -10,26 +10,17 @@ public interface IPersonService
 
     Task<Result<Person>> GetUserByNameAsync(string name);
 
-    ConfiguredCancelableAsyncEnumerable<Person> GetAllAsync(
-                      int page,
-                      int count,
-                      Expression<Func<Person, string>> orderby,
-                      bool descending,
-                      bool noTracking,
-                      bool includePosts,
-                      CancellationToken ct);
 
-    IAsyncEnumerable<Person> GetAllUsersByRoleAsync(
+    IAsyncEnumerable<object> GetAllUsersByRoleAsync(
                      string role,
                      int page,
                      int count,
-                     Expression<Func<Person, string>> orderby,
+                     string orderby,
                      bool descending,
                      bool noTracking,
-                     bool includePosts,
                      CancellationToken ct);
 
-    IAsyncEnumerable<Person> GetAllCommentsByUserAsync(
+    ConfiguredCancelableAsyncEnumerable<Person> GetAllCommentsByUserAsync(
                     string username,
                     int page,
                     int count,

@@ -1,6 +1,7 @@
 namespace Domain.Enums;
 
-public enum Role{
+public enum UserRole
+{
     Public,
     Writer,
     Editor

@@ -9,6 +9,6 @@ public class Author : Person
 
     public Author()
     {
-        Role = Role.Writer;
+        Role = UserRole.Writer;
     }
 }

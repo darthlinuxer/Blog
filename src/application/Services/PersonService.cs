@@ -1,20 +1,23 @@
 namespace Application.Services;
 
-public class PersonService: IPersonService<Person>
+public class PersonService: IPersonService
 {
     protected readonly UserManager<Person> _userManager;
     protected readonly SignInManager<Person> _signInManager;
     protected readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IUnitOfWork _unitOfWork;
 
     public PersonService(
         UserManager<Person> userManager,
         SignInManager<Person> signInManager,
-        RoleManager<IdentityRole> roleManager
+        RoleManager<IdentityRole> roleManager,
+        IUnitOfWork unitOfWork
         )
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
+        this._unitOfWork = unitOfWork;
     }
 
     public async Task<Result<Person>> RegisterAsync(UserRecordDTO input)
@@ -66,58 +69,17 @@ public class PersonService: IPersonService<Person>
         return Result<Person>.Success(user);
     }
 
-    public ConfiguredCancelableAsyncEnumerable<Person> GetAllUsersFiltered(
-                        Expression<Func<Person, bool>> where,
-                        int page,
-                        int count,
-                        Expression<Func<Person, string>> orderby,
-                        bool descending,
-                        bool noTracking,
-                        CancellationToken ct)
+    public ConfiguredCancelableAsyncEnumerable<Person> GetAllCommentsByUserAsync(
+        string username,
+        int page,
+        int count,
+        Expression<Func<Person, string>> orderby,
+        bool descending,
+        bool noTracking,
+        bool includePosts,
+        CancellationToken ct)
     {
-        var users = _userManager.Users.AsQueryable();
-        users = users.Where(where).Skip((page - 1) * count).Take(count);
-        if (descending) users = users.OrderByDescending(orderby);
-        else users = users.OrderBy(orderby);
-        if (noTracking) users = users.AsNoTrackingWithIdentityResolution();
-        return users.AsAsyncEnumerable().WithCancellation(ct);
-    }
-
-    public async IAsyncEnumerable<Person> GetAllUsersByRole(
-                     string role,
-                     int page,
-                     int count,
-                     Expression<Func<Person, string>> orderby,
-                     bool descending,
-                     bool noTracking,
-                     bool includePosts,
-                     [EnumeratorCancellation] CancellationToken ct)
-    {
-        var usersResult = GetAll(page, count, orderby, descending, noTracking, includePosts, ct);
-        await foreach (var user in usersResult.WithCancellation(ct))
-        {
-            if (ct.IsCancellationRequested) break;
-            if (await _userManager.IsInRoleAsync(user, role)) yield return user;
-        }
-    }
-
-
-    public ConfiguredCancelableAsyncEnumerable<Person> GetAll(
-                      int page,
-                      int count,
-                      Expression<Func<Person, string>> orderby,
-                      bool descending,
-                      bool noTracking,
-                      bool includePosts,
-                      CancellationToken ct)
-    {
-        var users = _userManager.Users.AsQueryable();
-        users = users.Skip((page - 1) * count).Take(count);
-        if (descending) users = users.OrderByDescending(orderby);
-        else users = users.OrderBy(orderby);
-        if (noTracking) users = users.AsNoTrackingWithIdentityResolution();
-        if (includePosts) users = users.Include("Posts");
-        return users.AsAsyncEnumerable().WithCancellation(ct);
+        throw new NotImplementedException();
     }
 
     //----------------------------------------------------------------------------------------
@@ -186,5 +148,67 @@ public class PersonService: IPersonService<Person>
         return Result<Person>.Success(userExistResult.Value);
     }
 
-    //---------------------------------------------------------------------------
+
+    //---------------------------------POLIMORPHIC------------------------------------------
+
+    public async IAsyncEnumerable<object> GetAllUsersByRoleAsync(
+        string role,
+        int page,
+        int count,
+        string orderby,
+        bool descending,
+        bool noTracking,
+        [EnumeratorCancellation] CancellationToken ct)
+    { 
+        if(string.Compare(role, "Writer")==0){
+            var authors =  _unitOfWork.Persons.GetAllAsync<Author>(
+                where: "Id>0",
+                orderby: orderby,
+                page: page,
+                count:count,
+                descending: descending,
+                includeNavigationNames: ["Posts","Comments"],
+                noTracking, ct);
+            await foreach(var author in authors)
+            {
+                if(ct.IsCancellationRequested) yield break;
+                yield return author;
+            }
+        }
+
+         if(string.Compare(role, "Editor")==0){
+            var editors =  _unitOfWork.Persons.GetAllAsync<Editor>(
+                where: "Id>0",
+                orderby: orderby,
+                page: page,
+                count:count,
+                descending: descending,
+                includeNavigationNames: ["Comments"],
+                noTracking, ct);
+            await foreach(var editor in editors)
+            {
+                if(ct.IsCancellationRequested) yield break;
+                yield return editor;
+            }
+        }
+
+        if(string.Compare(role, "Public")==0){
+            var users =  _unitOfWork.Persons.GetAllAsync<Editor>(
+                where: "Id>0",
+                orderby: orderby,
+                page: page,
+                count:count,
+                descending: descending,
+                includeNavigationNames: ["Comments"],
+                noTracking, ct);
+            await foreach(var user in users)
+            {
+                if(ct.IsCancellationRequested) yield break;
+                yield return user;
+            }
+        }
+        
+    }
+
+
 }

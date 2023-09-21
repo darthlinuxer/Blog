@@ -5,6 +5,6 @@ public sealed class Editor : Person
 {
     public Editor()
     {
-        Role = Role.Editor;        
+        Role = UserRole.Editor;
     }
 }
