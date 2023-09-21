@@ -2,5 +2,5 @@ namespace Domain.Interfaces;
 
 public interface IAuthorService
 {
-     Task<Result<IEnumerable<PostModel>>> GetAllPostsByUserAsync(string username);
+     Task<Result<IEnumerable<PostModel>>> GetAllPostsByAuthorAsync(string username);
 }

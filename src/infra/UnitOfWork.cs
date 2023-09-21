@@ -6,13 +6,12 @@ public class UnitOfWork : IDisposable, IUnitOfWork
     public UnitOfWork(BlogContext context)
     {
         _context = context;
-        Articles = new ArticleRepository(_context);
-        Posts = new PostRepository(_context);
-        Comments = new CommentRepository(_context);
+        Articles = new GenericRepository<Article>(_context);
+        Persons = new GenericRepository<Person>(_context);
+        
     }
-    public IArticleRepository Articles { get; init; }
-    public IPostRepository Posts { get; init; }
-    public ICommentRepository Comments { get; init; }
+    public IGenericPolymorphicRepository<Article> Articles { get; init; }
+    public IGenericPolymorphicRepository<Person> Persons {get; init;}
     public async Task<int> CompleteAsync() => await _context.SaveChangesAsync();
     public void Dispose() => _context.Dispose();
 

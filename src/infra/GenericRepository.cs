@@ -1,58 +1,24 @@
 namespace Infra;
 
-public class GenericRepository<T> : IGenericRepository<T> where T : class
+public class GenericRepository<T> : IGenericPolymorphicRepository<T> where T : class
 {
-    protected readonly BlogContext _context;
+    private readonly BlogContext _context;
+    private readonly DbSet<T> _collection;
     public GenericRepository(BlogContext context)
     {
         _context = context;
+        _collection = _context.Set<T>();
     }
 
-    public async Task<T?> GetAsync(Expression<Func<T, bool>> p, CancellationToken ct, bool asNoTracking, string[]? includeNavigationNames)
+    public bool Exist<U>(Expression<Func<U, bool>> p) where U : T => _collection.Any(p);
+
+    public int Count<U>(Expression<Func<U, bool>> p) where U : T => _collection.Where(p).Count();
+
+    public async Task<U?> AddAsync<U>(U entity) where U : T
     {
         try
         {
-            var mainQuery = _context.Set<T>().AsQueryable<T>();
-            if (asNoTracking) mainQuery = mainQuery.AsNoTracking();
-            if (includeNavigationNames?.Length > 0) foreach (var navigation in includeNavigationNames) mainQuery = mainQuery.Include(navigation);
-            var result = await mainQuery.SingleOrDefaultAsync(p, ct);
-            return result;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-    }
-
-    public ConfiguredCancelableAsyncEnumerable<T?> GetAllAsync(string where,
-                                                               string orderby,
-                                                               int page,
-                                                               int count,
-                                                               bool descending,
-                                                               string[]? includeNavigationNames,
-                                                               bool asNoTracking,
-                                                               CancellationToken ct)
-    {
-        try
-        {
-            string direction = descending ? "desc" : "asc";
-            var mainQuery = _context.Set<T>().Where(where).OrderBy($"{orderby} {direction}").Skip((page - 1) * count).Take(count);
-            if (asNoTracking) mainQuery = mainQuery?.AsNoTracking();
-            if (includeNavigationNames?.Length > 0) foreach (var navigation in includeNavigationNames) mainQuery = mainQuery!.Include(navigation);
-            var result = mainQuery!.AsAsyncEnumerable().WithCancellation(ct);
-            return result;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-    }
-
-    public async Task<T?> AddAsync(T entity)
-    {
-        try
-        {
-            await _context.Set<T>().AddAsync(entity);
+            await _collection.AddAsync(entity);
             return entity;
         }
         catch (Exception)
@@ -61,8 +27,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
-
-    public T Remove(T entity)
+    public U Remove<U>(U entity) where U : T
     {
         try
         {
@@ -75,12 +40,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
-    public T Update(T entity)
+    public U Update<U>(U entity) where U : T
     {
         try
         {
-            var entry = _context.Set<T>().Update(entity);
-            entry.State = EntityState.Modified;
+            var entry = _collection.Update(entity);
             return entity;
         }
         catch (Exception)
@@ -89,31 +53,46 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
-    public bool Exist(Expression<Func<T, bool>> p)
-    {
-        return _context.Set<T>().Any(p.Compile());
-    }
-
-    public int Count(Expression<Func<T, bool>> p)
-    {
-        return _context.Set<T>().Where(p.Compile()).Count();
-    }
-
-    public ConfiguredCancelableAsyncEnumerable<T?> GetAllOfTypeAsync<U>(string where, string orderby, int page, int count, bool descending, string[]? includeNavigationNames, bool asNoTracking, CancellationToken ct) where U : class
+    public async Task<U?> GetAsync<U>(Expression<Func<U, bool>> p,
+                                      CancellationToken ct,
+                                      bool asNoTracking,
+                                      string[]? includeNavigationNames) where U : T
     {
         try
         {
-            string direction = descending ? "desc" : "asc";
-            var mainQuery = _context.Set<T>().OfType<U>().Where(where).OrderBy($"{orderby} {direction}").Skip((page - 1) * count).Take(count);
-            if (asNoTracking) mainQuery = mainQuery?.AsNoTracking();
-            if (includeNavigationNames?.Length > 0) foreach (var navigation in includeNavigationNames) mainQuery = mainQuery!.Include(navigation);
-            var result = mainQuery!.Cast<T>().AsAsyncEnumerable().WithCancellation(ct);
-            return result;
-            
+            var mainQuery = _collection.AsQueryable<T>();
+            if (asNoTracking) mainQuery = mainQuery.AsNoTracking();
+            if (includeNavigationNames?.Length > 0) foreach (var navigation in includeNavigationNames) mainQuery = mainQuery.Include(navigation);
+            return await mainQuery.OfType<U>().SingleOrDefaultAsync(p, ct);
         }
         catch (Exception)
         {
             throw;
         }
     }
+
+    public ConfiguredCancelableAsyncEnumerable<U>? GetAllAsync<U>(string where,
+                                                                  string orderby,
+                                                                  int page,
+                                                                  int count,
+                                                                  bool descending,
+                                                                  string[]? includeNavigationNames,
+                                                                  bool asNoTracking,
+                                                                  CancellationToken ct) where U : T
+    {
+        try
+        {
+            string direction = descending ? "desc" : "asc";
+            var mainQuery = _collection.Where(where).OrderBy($"{orderby} {direction}").Skip((page - 1) * count).Take(count);
+            if (asNoTracking) mainQuery = mainQuery?.AsNoTracking();
+            if (includeNavigationNames?.Length > 0) foreach (var navigation in includeNavigationNames) mainQuery = mainQuery!.Include(navigation);
+            return mainQuery!.OfType<U>().AsAsyncEnumerable().WithCancellation(ct);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    public async Task<int> CommitAsync() => await _context.SaveChangesAsync();
 }

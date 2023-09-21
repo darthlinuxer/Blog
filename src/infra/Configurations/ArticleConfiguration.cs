@@ -4,9 +4,7 @@ public class ArticleConfiguration : IEntityTypeConfiguration<Article>
 {
        public void Configure(EntityTypeBuilder<Article> builder)
        {
-              builder.HasDiscriminator<string>("ArticleType")
-                     .HasValue<PostModel>("Post")
-                     .HasValue<Comment>("Comment");
+              builder.UseTptMappingStrategy();
 
               // Define the primary key
               builder.HasKey(p => p.Id);
